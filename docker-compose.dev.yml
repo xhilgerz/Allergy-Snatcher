@@ -1,0 +1,44 @@
+
+services:
+  frontend:
+    image: null
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend.dev
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - backend
+    watch:
+      paths:
+        - ./frontend
+      target: []
+      action: sync
+  backend:
+    image: null
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend.dev
+    ports:
+      - "5000:5000"
+    watch:
+      paths:
+        - ./backend
+      target: []
+      action: sync+restart
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
