@@ -10,22 +10,24 @@ services:
       - ./frontend:/usr/share/nginx/html
     depends_on:
       - backend
-    # watch:
-    #   paths:
-    #     - ./frontend
-    #   target: []
-    #   action: sync
+    develop:
+      watch:
+        paths:
+          - ./frontend
+        target: []
+        action: sync
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
-    # watch:
-    #   paths:
-    #     - ./backend
-    #   target: []
-    #   action: sync+restart
+    develop:
+      watch:
+        paths:
+          - ./backend
+        target: []
+        action: sync+restart
   db:
     image: mysql:8.0
     ports:
