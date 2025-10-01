@@ -2,8 +2,8 @@
 services:
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile.frontend.dev
+      context: ./allergy_app
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     volumes:
@@ -12,14 +12,12 @@ services:
       - backend
     # develop:
     #   watch:
-    #     - path: ./frontend
-    #       target: ""
+    #     - path: allergy_app:prod
     #       action: sync
-    watch:
-      paths: allergy_app:prod
-        - ./frontend
-      target: []
-      action: sync
+    #       # target: ## todo: add internal container dir to sync
+    #     - path: ./frontend
+    #       action: sync
+    #       # target: ## todo: add internal container dir to sync
   backend:
     build:
       context: ./backend
