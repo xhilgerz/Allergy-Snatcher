@@ -28,7 +28,7 @@ services:
       watch:
         - path: ./backend/src/
           target: "/home/appuser/app/src/"
-          action: sync+restart
+          action: rebuild
         - path: ./backend/pyproject.toml
           target: "/home/appuser/app/pyproject.toml"
           action: rebuild
