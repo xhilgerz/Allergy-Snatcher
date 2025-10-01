@@ -1,15 +1,17 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
+/backend/.venv
+/backend/dist
 
 # testing
-/coverage
+/allergy_app/coverage
 
 # production
-/build
+/allergy_app/build
 
 # misc
 .DS_Store
@@ -22,3 +24,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 /allergy_app/node_modules
+*.pyc
+
