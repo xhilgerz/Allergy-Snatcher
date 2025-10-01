@@ -29,6 +29,15 @@ services:
         - path: ./backend
           target: "/home/appuser/app"
           action: sync+restart
+        - path: ./backend/pyproject.toml
+          target: "/home/appuser/app/pyproject.toml"
+          action: rebuild
+        - path: ./backend/requirements.txt
+          target: "/home/appuser/app/requirements.txt"
+          action: rebuild
+        - path: ./backend/uv.lock
+          target: "/home/appuser/app/uv.lock"
+          action: rebuild
   db:
     image: mysql:8.0
     ports:
