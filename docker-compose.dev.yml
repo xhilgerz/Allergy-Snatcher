@@ -1,7 +1,6 @@
 
 services:
   frontend:
-    image: null
     build:
       context: ./frontend
       dockerfile: Dockerfile.frontend.dev
@@ -17,10 +16,9 @@ services:
       target: []
       action: sync
   backend:
-    image: null
     build:
       context: ./backend
-      dockerfile: Dockerfile.backend.dev
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     watch:

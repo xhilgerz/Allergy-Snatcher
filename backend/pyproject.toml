@@ -1,0 +1,20 @@
+[project]
+name = "allergy-snatcher"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Bionix", email = "SCBionicle@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "authlib>=1.6.4",
+    "flask>=3.1.2",
+]
+
+[project.scripts]
+allergy-snatcher = "allergy_snatcher:main"
+
+[build-system]
+requires = ["uv_build>=0.8.22,<0.9.0"]
+build-backend = "uv_build"
