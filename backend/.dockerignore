@@ -10,4 +10,3 @@ docker-compose.yml
 .git
 .gitignore
 package-lock.json
-uv.lock
