@@ -10,3 +10,5 @@ docker-compose.yml
 .git
 .gitignore
 package-lock.json
+.venv
+.pyc

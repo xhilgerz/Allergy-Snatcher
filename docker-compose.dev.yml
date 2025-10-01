@@ -26,8 +26,8 @@ services:
       - "5000:5000"
     develop:
       watch:
-        - path: ./backend
-          target: "/home/appuser/app"
+        - path: ./backend/src/
+          target: "/home/appuser/app/src/"
           action: sync+restart
         - path: ./backend/pyproject.toml
           target: "/home/appuser/app/pyproject.toml"
@@ -38,6 +38,11 @@ services:
         - path: ./backend/uv.lock
           target: "/home/appuser/app/uv.lock"
           action: rebuild
+        - path: ./backend/Dockerfile
+          action: rebuild
+        - path: ./backend/.dockerignore
+          action: rebuild
+        
   db:
     image: mysql:8.0
     ports:
