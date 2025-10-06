@@ -11,7 +11,9 @@ export async function getFoods() {
     if (!response.ok) {
       throw new Error("Failed to fetch foods");
     }
-    return await response.json();
+    const data = await response.json();
+    console.log("✅ Data fetched from Flask:", data); 
+    return data;
   } catch (error) {
     console.error("Error fetching foods:", error);
     throw error;
