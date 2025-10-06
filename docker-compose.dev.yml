@@ -5,25 +5,23 @@ services:
       context: ./allergy_app
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "3000:3000"
     volumes:
       - ./frontend:/usr/share/nginx/html
     depends_on:
       - backend
-    # develop:
-    #   watch:
-    #     - path: allergy_app:prod
-    #       action: sync
-    #       # target: ## todo: add internal container dir to sync
-    #     - path: ./frontend
-    #       action: sync
-    #       # target: ## todo: add internal container dir to sync
+    develop:
+      watch:
+        - path: ./frontend
+          target: "/usr/share/nginx/html"
+          action: sync
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "5001:5000"
     develop:
       watch:
         - path: ./backend/src/
