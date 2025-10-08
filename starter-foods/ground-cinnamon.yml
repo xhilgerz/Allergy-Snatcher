@@ -1,8 +1,10 @@
+# source: https://www.heb.com/product-detail/h-e-b-ground-cinnamon/1627073
+
 name: H-E-B Ground Cinnamon
 brand: H-E-B
 ingredients:
   - Cinnamon
-nutrition:
+nutrition: #this must be in grams
   fats:
     total: 0
     saturated: 0
@@ -17,3 +19,6 @@ nutrition:
 servings:
   size: 0.25
   unit: tsp
+categories:
+ - ingredient
+dietary_restrictions: []
