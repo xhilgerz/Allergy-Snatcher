@@ -1,11 +1,11 @@
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, field_validator
+from typing import Optional, Literal
 from pymysql import connect
 import argparse
 import sys
 import logging
-import File
 import os
+import yaml
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO) 
@@ -54,3 +54,48 @@ if os.path.isdir(inputDir) and os.path.exists(inputDir):
     sys.exit(4)
 
 
+
+### START VALIDATION MODELS ###
+class FoodYAMLBase(BaseModel):
+    pass
+
+class Fats(FoodYAMLBase):
+    total: float
+    saturated: float
+    trans: float
+
+class Servings(FoodYAMLBase):
+    size: float
+    unit: Literal['g','mg', 'oz','lb']
+
+class Nutrition(FoodYAMLBase):
+    fats: Fats
+    cholesterol: float
+    sodium: float
+    carbohydrates: float
+    dietary_fiber: float
+    total_sugars: float
+    added_sugars: float
+    protein: float
+
+class Food(FoodYAMLBase):
+    name: str
+    brand: str
+    ingredients: list[str]
+    nutrition: Nutrition
+    servings: Servings
+    categories: list[str]
+    dietary_restrictions: list[str] = Field()
+    
+    @field_validator('dietary_restrictions', each_item=True)
+    def check_dietary_restrictions(cls, v):
+        allowed_restrictions_list = None
+        if os.path.exists(f"{inputDir}/allowed_dietary_restrictions.txt"):
+            with open(f"{inputDir}/allowed_dietary_restrictions.txt", 'r') as f:
+                allowed_restrictions_list = f.readlines()
+                allowed_restrictions_list = [x.strip() for x in allowed_restrictions_list]
+        if allowed_restrictions_list is not None:
+            if v not in allowed_restrictions_list:
+                raise ValueError(f"Dietary restriction '{v}' is not allowed.")
+        return v
+### END VALIDATION MODELS ###
