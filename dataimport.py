@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ValidationError
 from typing import Optional, Literal
 from pymysql import connect
 import argparse
@@ -18,9 +18,10 @@ a MySQL database directory.""",
 exit_on_error=True,
 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 add_help=True)
-parser.add_argument("-i", "--input-dir", help="directory to scan for food files", required=True)
-parser.add_argument("-o", "--output", default=None, help="output SQL to file instead of importing")
+parser.add_argument("-i", "--input-dir", help="directory to scan for food files", required=True, action="store")
+parser.add_argument("-o", "--output", default=None, help="output SQL to file instead of importing", action="store")
 parser.add_argument("-I", "--ignore-import-error", action="store_true", help="Ignore and skip over data files that failed to parse")
+parser.add_argument('-D','--debug',action="store_true",help="Enable debug logging")
 
 db_group = parser.add_argument_group('database options')
 db_group.add_argument("-H", "--host", default="localhost", help="database host")
@@ -49,26 +50,24 @@ if args.output and db_arg_used:
     sys.exit(1)
 
 inputDir = args.input_dir
-if os.path.isdir(inputDir) and os.path.exists(inputDir):
-    logger.error("Input file does not exist")
+if not os.path.isdir(inputDir) or not os.path.exists(inputDir):
+    logger.error("Input directory does not exist")
     sys.exit(4)
 
-
+if args.debug:
+    logger.setLevel(logging.DEBUG)
 
 ### START VALIDATION MODELS ###
-class FoodYAMLBase(BaseModel):
-    pass
-
-class Fats(FoodYAMLBase):
+class Fats(BaseModel):
     total: float
     saturated: float
     trans: float
 
-class Servings(FoodYAMLBase):
+class Servings(BaseModel):
     size: float
-    unit: Literal['g','mg', 'oz','lb']
+    unit: Literal['g','mg', 'oz','lb', 'tsp', 'tbsp', 'cup']
 
-class Nutrition(FoodYAMLBase):
+class Nutrition(BaseModel):
     fats: Fats
     cholesterol: float
     sodium: float
@@ -78,24 +77,61 @@ class Nutrition(FoodYAMLBase):
     added_sugars: float
     protein: float
 
-class Food(FoodYAMLBase):
+class Food(BaseModel):
     name: str
     brand: str
     ingredients: list[str]
     nutrition: Nutrition
     servings: Servings
     categories: list[str]
-    dietary_restrictions: list[str] = Field()
+    dietary_restrictions: list[str] = Field(default=[])
     
-    @field_validator('dietary_restrictions', each_item=True)
+    @field_validator('dietary_restrictions')
     def check_dietary_restrictions(cls, v):
         allowed_restrictions_list = None
+        if v == '[]':
+            v = []
         if os.path.exists(f"{inputDir}/allowed_dietary_restrictions.txt"):
             with open(f"{inputDir}/allowed_dietary_restrictions.txt", 'r') as f:
                 allowed_restrictions_list = f.readlines()
                 allowed_restrictions_list = [x.strip() for x in allowed_restrictions_list]
-        if allowed_restrictions_list is not None:
+        if allowed_restrictions_list is not None and isinstance(v,list) and len(v) > 0:
             if v not in allowed_restrictions_list:
                 raise ValueError(f"Dietary restriction '{v}' is not allowed.")
         return v
 ### END VALIDATION MODELS ###
+
+
+# Get file list
+file_list = []
+for root, dirs, files in os.walk(inputDir):
+    for file in files:
+        if file.endswith(".yaml") or file.endswith(".yml"):
+            file_list.append(os.path.join(root, file))
+
+foods : list[Food] = []
+# Parse yml files
+for file in file_list:
+    with open(file, 'r') as f:
+        food = None
+        try:
+            food = yaml.load(f,yaml.FullLoader)
+            logger.debug(f"Parsed {file}:{food}")
+        except yaml.YAMLError as e:
+            if args.ignore_import_error:
+                logger.warning(f"Failed to parse {file}: {e}")
+            else:
+                logger.error(f"Failed to parse {file}: {e}")
+                sys.exit(3)
+        if food is not None:
+            try:
+                food = Food(**food)
+                Food.model_validate(food)
+                foods.append(food)
+            except (ValueError, ValidationError) as e:
+                if args.ignore_import_error:
+                    logger.warning(f"Failed to validate {file}: {e}")
+                    continue
+                else:
+                    logger.warning(f"Failed to validate {file}: {e}")
+                    sys.exit(3)
