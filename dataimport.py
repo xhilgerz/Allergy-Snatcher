@@ -1,11 +1,30 @@
-from pydantic import BaseModel, Field, field_validator, ValidationError
-from typing import Optional, Literal
-from pymysql import connect
-import argparse
+import subprocess
 import sys
 import logging
 import os
-import yaml
+import argparse
+from typing import Optional, Literal
+
+try:
+    from pydantic import BaseModel, Field, field_validator, ValidationError
+except ImportError:
+    logging.info("pydantic not found. Installing...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "pydantic"])
+    from pydantic import BaseModel, Field, field_validator, ValidationError
+
+try:
+    from pymysql import connect
+except ImportError:
+    logging.info("PyMySQL not found. Installing...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "PyMySQL"])
+    from pymysql import connect
+
+try:
+    import yaml
+except ImportError:
+    logging.info("PyYAML not found. Installing...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "PyYAML"])
+    import yaml
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO) 
