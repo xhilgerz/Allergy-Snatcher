@@ -1,3 +1,4 @@
+#!/bin/python3
 import subprocess
 import sys
 import logging
@@ -106,7 +107,7 @@ class Food(BaseModel):
     dietary_restrictions: list[str] = Field(default=[])
     
     @field_validator('dietary_restrictions')
-    def check_dietary_restrictions(cls, v):
+    def check_dietary_restrictions(cls, v: list[str]):
         allowed_restrictions_list = None
         if v == '[]':
             v = []
@@ -114,8 +115,9 @@ class Food(BaseModel):
             with open(f"{inputDir}/allowed_dietary_restrictions.txt", 'r') as f:
                 allowed_restrictions_list = f.readlines()
                 allowed_restrictions_list = [x.strip() for x in allowed_restrictions_list]
-        if allowed_restrictions_list is not None and isinstance(v,list) and len(v) > 0:
-            if v not in allowed_restrictions_list:
+        if allowed_restrictions_list is not None and (isinstance(v,list) and len(v) > 0) \
+                or not isinstance(v,list):
+            if not isinstance(v, list) or v not in allowed_restrictions_list:
                 raise ValueError(f"Dietary restriction '{v}' is not allowed.")
         return v
 ### END VALIDATION MODELS ###
