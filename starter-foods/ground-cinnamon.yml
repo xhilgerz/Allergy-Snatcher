@@ -19,6 +19,6 @@ nutrition: #this must be in grams
 servings:
   size: 0.25
   unit: tsp
-categories:
- - ingredient
+category: ingredient
+cruisine: null # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)
 dietary_restrictions: []
