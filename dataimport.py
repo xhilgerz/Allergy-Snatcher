@@ -29,21 +29,39 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO) 
-logger.addHandler(logging.StreamHandler())
- 
-parser = argparse.ArgumentParser(prog="Allergy Snatcher Food Import Tool",
-                                 description="""
+logger.addHandler(logging.StreamHandler(stream=sys.stderr))
+
+class CustomArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        self.print_usage(sys.stderr)
+        args = {'prog': self.prog, 'message': message}
+        self.exit(1, ('%(prog)s: error: %(message)s\n') % args)
+
+parser = CustomArgumentParser(description="""
 This tool can be used to generate an import script for MySQL or import into 
-a MySQL database directory.""",
-exit_on_error=True,
+a MySQL database directory.
+All logging will print to stderr""",
+exit_on_error=False, # We handle exit in our custom error method
 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 add_help=True)
 parser.add_argument("-i", "--input-dir", help="directory to scan for food files", required=True, action="store")
 parser.add_argument("-o", "--output", default=None, help="output SQL to file instead of importing", action="store")
 parser.add_argument("-I", "--ignore-import-error", action="store_true", help="Ignore and skip over data files that failed to parse")
-parser.add_argument('-D','--debug',action="store_true",help="Enable debug logging")
+debug_group = parser.add_argument_group('Logging Options')
+debug_group.description ="""
+Changes logging output settings on the level of verbosity.
+Default: Warnings and Errors only.
+"""
+ex_debug_group = debug_group.add_mutually_exclusive_group(required=False)
+ex_debug_group.add_argument('-D','--debug',action="store_true",help="Enable debug logging")
+ex_debug_group.add_argument('-q','--quiet',action="store_true",help="Disable logging (errors only)")
+ex_debug_group.add_argument('-v','--verbose',action="store_true",help="Enable verbose logging")
 
 db_group = parser.add_argument_group('database options')
+db_group.description ="""
+Instead of outputting a file or stdout, this will import into a MySQL database directly.
+Not compatible with the --output option.
+"""
 db_group.add_argument("-H", "--host", default="localhost", help="database host")
 db_group.add_argument("-P", "--port", default=3306, type=int, help="database port")
 db_group.add_argument("-u", "--user", default="root", help="database user")
@@ -62,6 +80,9 @@ Exit codes:
 
 args = parser.parse_args()
 
+
+
+
 db_opts = ['-H', '--host', '-P', '--port', '-u', '--user', '-p', '--password', '-d', '--database', '-s', '--ssl']
 db_arg_used = any(arg in sys.argv for arg in db_opts)
 
@@ -76,6 +97,15 @@ if not os.path.isdir(inputDir) or not os.path.exists(inputDir):
 
 if args.debug:
     logger.setLevel(logging.DEBUG)
+    logger.debug("Debug logging enabled")
+elif args.quiet:
+    logger.setLevel(logging.ERROR)
+elif args.verbose:
+    logger.setLevel(logging.INFO)
+    logger.debug("Verbose logging enabled")
+else:
+    logger.setLevel(logging.WARNING)
+    logger.debug("Logging disabled")
 
 ### START VALIDATION MODELS ###
 class Fats(BaseModel):
