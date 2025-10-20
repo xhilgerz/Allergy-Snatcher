@@ -5,27 +5,31 @@ import logging
 import os
 import argparse
 from typing import Optional, Literal
+import importlib
 
-try:
-    from pydantic import BaseModel, Field, field_validator, ValidationError
-except ImportError:
-    logging.info("pydantic not found. Installing...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "pydantic"])
-    from pydantic import BaseModel, Field, field_validator, ValidationError
+# Check for required modules
+required_modules = {
+    "pydantic": "pydantic",
+    "pymysql": "PyMySQL",
+    "yaml": "PyYAML"
+}
+missing_modules = []
 
-try:
-    from pymysql import connect
-except ImportError:
-    logging.info("PyMySQL not found. Installing...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "PyMySQL"])
-    from pymysql import connect
+for module, package in required_modules.items():
+    try:
+        importlib.import_module(module)
+    except ImportError:
+        missing_modules.append(package)
 
-try:
-    import yaml
-except ImportError:
-    logging.info("PyYAML not found. Installing...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "PyYAML"])
-    import yaml
+if missing_modules:
+    print(f"Missing required modules: {', '.join(missing_modules)}. Installing...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", *missing_modules])
+    print("Modules installed. Please re-run the script.")
+    sys.exit(1)
+
+from pydantic import BaseModel, Field, field_validator, ValidationError
+from pymysql import connect
+import yaml
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO) 
@@ -67,7 +71,7 @@ db_group.add_argument("-P", "--port", default=3306, type=int, help="database por
 db_group.add_argument("-u", "--user", default="root", help="database user")
 db_group.add_argument("-p", "--password", default="", help="database password")
 db_group.add_argument("-d", "--database", default="allergysnatcher", help="database name")
-db_group.add_argument("-s", "--ssl", action="store_true", help="enable SSL")
+db_group.add_argument("-s", "--ssl", default=False, action="store_true", help="enable SSL")
 
 parser.epilog = """
 Exit codes:
@@ -85,6 +89,15 @@ args = parser.parse_args()
 
 db_opts = ['-H', '--host', '-P', '--port', '-u', '--user', '-p', '--password', '-d', '--database', '-s', '--ssl']
 db_arg_used = any(arg in sys.argv for arg in db_opts)
+
+dbengine = None
+if db_arg_used:
+    try:
+        dbengine = connect(host=args.host, port=args.port, user=args.user, password=args.password, database=args.database, ssl=args.ssl)
+        logger.info("Connected to database")
+    except Exception as e:
+        logger.error(f"Failed to connect to database: {e}")
+        sys.exit(2)
 
 if args.output and db_arg_used:
     parser.error("argument -o/--output: not allowed with database options")
@@ -170,6 +183,7 @@ for file in file_list:
         food = None
         try:
             food = yaml.load(f,yaml.FullLoader)
+            logger.info(f"Parsed {file}")
             logger.debug(f"Parsed {file}:{food}")
         except yaml.YAMLError as e:
             if args.ignore_import_error:
@@ -180,8 +194,10 @@ for file in file_list:
         if food is not None:
             try:
                 food = Food(**food)
-                Food.model_validate(food)
+                food = Food.model_validate(food)
                 foods.append(food)
+                logger.info(f"Validated {file}")
+                logger.debug(f"Validated {file}: Food({food})")
             except (ValueError, ValidationError) as e:
                 if args.ignore_import_error:
                     logger.warning(f"Failed to validate {file}: {e}")
@@ -189,3 +205,23 @@ for file in file_list:
                 else:
                     logger.warning(f"Failed to validate {file}: {e}")
                     sys.exit(3)
+
+dbscript = ""
+for food in foods:
+    dbscript += f"INSERT INTO foods #todo: finish db schema\n"
+
+if args.output:
+    with open(args.output, 'w') as f:
+        f.write(dbscript)
+else:
+    if dbengine is not None:
+        try:
+            with dbengine.cursor() as cursor:
+                cursor.execute(dbscript)
+                dbengine.commit()
+        except Exception as e:
+            logger.error(f"Failed to execute database script: {e}")
+            sys.exit(2)
+    else:
+        print(dbscript)
+sys.exit(0)
