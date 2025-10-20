@@ -85,7 +85,7 @@ class Fats(BaseModel):
 
 class Servings(BaseModel):
     size: float
-    unit: Literal['g','mg', 'oz','lb', 'tsp', 'tbsp', 'cup']
+    unit: Literal['g','mg', 'oz','lb', 'tsp', 'tbsp', 'cup', 'item']
 
 class Nutrition(BaseModel):
     fats: Fats
