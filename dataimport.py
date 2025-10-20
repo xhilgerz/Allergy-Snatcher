@@ -104,7 +104,7 @@ class Food(BaseModel):
     nutrition: Nutrition
     servings: Servings
     category: str
-    cruisine: Optional[str]
+    cuisine: Optional[str]
     dietary_restrictions: list[str] = Field(default=[])
     
     @field_validator('dietary_restrictions')

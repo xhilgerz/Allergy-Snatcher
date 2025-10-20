@@ -20,5 +20,5 @@ servings:
   size: 0.25
   unit: tsp
 category: ingredient
-cruisine: null # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)
+cuisine: null # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)
 dietary_restrictions: []
