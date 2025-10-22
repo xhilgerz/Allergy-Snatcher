@@ -1,0 +1,40 @@
+#source: https://www.heb.com/product-detail/mission-zero-net-carbs-original-flour-tortillas-street-taco-size-14-ct/7991008
+
+name: Mission Zero Net Carbs Original Flour Tortillas, Street Taco Size
+brand: Mission 
+ingredients:
+  - Modified Wheat Starch 
+  - Water 
+  - Vital Wheat Gluten 
+  - Wheat Gluten Isolate 
+  - Vegetable Shortening 
+  - Salt
+  - Calcium Propionate
+  - Sodium Acid Pyrophosphate
+  - Baking Soda
+  - Distilled Monoglycerides
+  - Sorbic Acid
+  - Fumaric Acid
+  - Cellulose Gum
+  - Sunflower Oil
+  - Natural Flavors
+  - Steviol Glycosides.
+
+nutrition: #this must be in grams
+  fats:
+    total: 1.5
+    saturated: 0.5
+    trans: 0
+  cholesterol: 0
+  sodium: .125
+  carbohydrates: 7
+  dietary_fiber: 0
+  total_sugars: 0
+  added_sugars: 0
+  protein: 2
+servings:
+  size: 1
+  unit: item
+category: ingredient
+cuisine: Mex # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)
+dietary_restrictions: []
