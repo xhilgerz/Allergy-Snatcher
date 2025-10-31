@@ -1,13 +1,13 @@
 """
 SQLAlchemy models for a user authentication and food tracking system, 
-based on the provided relational schema.
+designed for MySQL 8.
 """
 
 # Allows for forward-referencing type hints in relationships (e.g., Mapped["User"])
 from __future__ import annotations
 import datetime
 from typing import List
-from sqlalchemy import create_engine, Integer, String, DateTime, ForeignKey, UniqueConstraint, func, Float
+from sqlalchemy import create_engine, Integer, String, DateTime, ForeignKey, UniqueConstraint, func, Float, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 # --- Base Class ---
@@ -62,8 +62,8 @@ class User(Base):
     )
     
     # One-to-many: A user can contribute many food items
-    foods_contributed: Mapped[List[Food]] = relationship(
-        back_populates="contributor"
+    foods: Mapped[List[Food]] = relationship(
+        back_populates="user"
     )
 
     def __repr__(self) -> str:
@@ -73,21 +73,12 @@ class User(Base):
 class Password(Base):
     """
     Stores the user's hashed password in a separate table.
-    This creates a one-to-one relationship with User and allows a
-    User to exist without a password.
     """
     __tablename__ = "passwords"
     
-    # The primary key is also the foreign key to users,
-    # enforcing a one-to-one relationship.
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
-    
-    # Stored hash of the user's local password.
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    # --- Relationship ---
-    
-    # One-to-one relationship back to the User
     user: Mapped[User] = relationship(back_populates="password")
     
     def __repr__(self) -> str:
@@ -97,8 +88,6 @@ class Password(Base):
 class OAuthAccount(Base):
     """
     Represents a link to an external OAuth provider (e.g., Google, GitHub).
-    This links to the User, not the Session, to allow for persistent
-    "Sign in with..." functionality.
     """
     __tablename__ = "oauth_accounts"
     
@@ -111,10 +100,13 @@ class OAuthAccount(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     provider: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     provider_user_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    access_token: Mapped[str] = mapped_column(String(1024), nullable=True)
-    refresh_token: Mapped[str] = mapped_column(String(1024), nullable=True)
+    
+    # UPDATED: Increased length for safety. Some tokens can be very long.
+    # Alternatively, use `Text` if tokens exceed this.
+    access_token: Mapped[str] = mapped_column(String(2048), nullable=True)
+    refresh_token: Mapped[str] = mapped_column(String(2048), nullable=True)
+    
     expires_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), nullable=True)
-    scopes: Mapped[str] = mapped_column(String(1024), nullable=True)
     
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -138,13 +130,8 @@ class UserSession(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     
-    # This corresponds to 'Client Token' in the diagram
     session_token: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
-    
-    # Corresponds to 'Expires' in the diagram
     expires_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    
-    # Corresponds to 'Created' in the diagram
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -168,7 +155,6 @@ class Category(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     category: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     
-    # One-to-many: A category can have many foods
     foods: Mapped[List[Food]] = relationship(back_populates="category")
 
     def __repr__(self) -> str:
@@ -183,7 +169,6 @@ class Cuisine(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     cuisine: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
 
-    # One-to-many: A cuisine can apply to many foods
     foods: Mapped[List[Food]] = relationship(back_populates="cuisine")
 
     def __repr__(self) -> str:
@@ -198,7 +183,6 @@ class DietaryRestriction(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     restriction: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     
-    # Many-to-many relationship with Food, via DietRestrictAssoc
     food_associations: Mapped[List[DietRestrictAssoc]] = relationship(
         back_populates="restriction", cascade="all, delete-orphan"
     )
@@ -233,24 +217,19 @@ class Food(Base):
     
     # --- Foreign Keys & Relationships ---
     
-    # (Optional) link to the user who contributed this item
-    contributor_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
-    contributor: Mapped[User | None] = relationship(back_populates="foods_contributed")
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    user: Mapped[User | None] = relationship(back_populates="foods")
     
-    # (Required) link to a category
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"), nullable=False)
     category: Mapped[Category] = relationship(back_populates="foods")
     
-    # (Required) link to a cuisine
-    cuisine_id: Mapped[int] = mapped_column(ForeignKey("cuisines.id"), nullable=False)
-    cuisine: Mapped[Cuisine] = relationship(back_populates="foods")
+    cuisine_id: Mapped[int | None] = mapped_column(ForeignKey("cuisines.id"), nullable=True)
+    cuisine: Mapped[Cuisine | None] = relationship(back_populates="foods")
 
-    # One-to-many: A food is made of multiple ingredients
     ingredients: Mapped[List[Ingredient]] = relationship(
         back_populates="food", cascade="all, delete-orphan"
     )
     
-    # Many-to-many relationship with DietaryRestriction, via DietRestrictAssoc
     restriction_associations: Mapped[List[DietRestrictAssoc]] = relationship(
         back_populates="food", cascade="all, delete-orphan"
     )
@@ -261,17 +240,14 @@ class Food(Base):
 class Ingredient(Base):
     """
     Represents an ingredient for a food item.
-    In the diagram, 'Ingredient' is a text field.
     """
     __tablename__ = "ingredients"
     
     id: Mapped[int] = mapped_column(primary_key=True)
     
-    # The food this ingredient belongs to
     food_id: Mapped[int] = mapped_column(ForeignKey("foods.id"), nullable=False)
     food: Mapped[Food] = relationship(back_populates="ingredients")
     
-    # The name of the ingredient (e.g., 'Flour', 'Sugar')
     ingredient_name: Mapped[str] = mapped_column(String(255), nullable=False)
 
     def __repr__(self) -> str:
@@ -289,10 +265,8 @@ class DietRestrictAssoc(Base):
     food_id: Mapped[int] = mapped_column(ForeignKey("foods.id"), primary_key=True)
     restriction_id: Mapped[int] = mapped_column(ForeignKey("dietary_restrictions.id"), primary_key=True)
 
-    # --- Relationships ---
     food: Mapped[Food] = relationship(back_populates="restriction_associations")
     restriction: Mapped[DietaryRestriction] = relationship(back_populates="food_associations")
 
     def __repr__(self) -> str:
         return f"<DietRestrictAssoc(food_id={self.food_id!r}, restriction_id={self.restriction_id!r})>"
-
