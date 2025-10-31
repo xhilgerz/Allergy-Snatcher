@@ -7,14 +7,14 @@ designed for MySQL 8.
 from __future__ import annotations
 import datetime
 from typing import List
-from sqlalchemy import create_engine, Integer, String, DateTime, ForeignKey, UniqueConstraint, func, Float, Text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Integer, String, DateTime, ForeignKey, UniqueConstraint, func, Float, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-# --- Base Class ---
-# All models will inherit from this class
-class Base(DeclarativeBase):
-    """Base class for SQLAlchemy models."""
-    pass
+db = SQLAlchemy()
+
+class Base(db.Model):
+    __abstract__ = True
 
 # --- User Model ---
 class User(Base):
