@@ -9,7 +9,7 @@ def main() -> None:
     
      #app.config.from_object('allergy_snatcher.config.Config') 
     
-    from allergy_snatcher.endpoints import routes
+    from allergy_snatcher.routes.endpoints import routes
     app.register_blueprint(routes)
     app.run(debug=True, host="0.0.0.0", port=5000)
 

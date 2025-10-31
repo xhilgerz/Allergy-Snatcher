@@ -22,10 +22,10 @@ for module, package in required_modules.items():
         missing_modules.append(package)
 
 if missing_modules:
-    print(f"Missing required modules: {', '.join(missing_modules)}. Installing...")
+    print(f"Missing required modules: {', '.join(missing_modules)}. Installing in 10 seconds...")
     subprocess.check_call([sys.executable, "-m", "pip", "install", *missing_modules])
     print("Modules installed. Please re-run the script.")
-    sys.exit(1)
+    sys.exit(255)
 
 from pydantic import BaseModel, Field, field_validator, ValidationError
 from pymysql import connect
