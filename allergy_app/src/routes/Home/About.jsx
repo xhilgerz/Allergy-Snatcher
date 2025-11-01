@@ -1,0 +1,1 @@
+// An about page to explain our goals and missions can be accessed through the home page

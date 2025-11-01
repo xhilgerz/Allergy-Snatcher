@@ -1,0 +1,1 @@
+//This page allows the admin to approve foods that users have submitted

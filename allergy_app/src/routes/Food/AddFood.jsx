@@ -1,0 +1,1 @@
+// Page where users can insert a new food to the database

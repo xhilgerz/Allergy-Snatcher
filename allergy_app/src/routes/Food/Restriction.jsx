@@ -1,0 +1,1 @@
+//This page shows the specific foods under a restriction including gluten free, non-dairy, etc. Can be filtered further using filter features. 
