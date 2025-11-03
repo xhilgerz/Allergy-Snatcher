@@ -3,7 +3,7 @@ import os
 from allergy_snatcher.models.database import db
 from allergy_snatcher.routes.auth import init_app as auth_init_app
 
-def main() -> None:
+def main() -> Flask:
     app = Flask(__name__, static_folder='../static', static_url_path='/')
     db_user = os.environ.get('DB_USER')
     db_password = os.environ.get('DB_PASSWORD')
@@ -78,8 +78,9 @@ def main() -> None:
     with app.app_context():
         db.create_all()
 
-    is_debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
-    app.run(debug=is_debug, host="0.0.0.0", port=5000)
+    return app
 
 if __name__ == "__main__":
-    main()
+    app = main()
+    is_debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(debug=is_debug, host="0.0.0.0", port=5000)
