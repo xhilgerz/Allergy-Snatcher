@@ -65,7 +65,7 @@ def get_food_by_id(food_id):
 
 @routes.route("/api/foods/category/<int:category_id>/<int:limit>/<int:offset>/<string:showhidden>", methods=['GET'])
 @optional_session
-def get_food_by_category(category_id: int, limit: int, offset: int, showhidden: str):
+def get_food_by_category(category_id: int, limit: int, offset: int, showhidden: str|bool):
     """
         HTTP GET
             Returns list of food objects by category. (admins see unlisting and public by default, private based on parameters)
@@ -107,7 +107,7 @@ def get_food_by_category(category_id: int, limit: int, offset: int, showhidden: 
 
 @routes.route("/api/foods/cuisine/<int:cuisine_id>/<int:limit>/<int:offset>/<string:showhidden>", methods=['GET'])
 @optional_session
-def get_food_by_cuisine(cuisine_id: int, limit: int, offset: int, showhidden: str):
+def get_food_by_cuisine(cuisine_id: int, limit: int, offset: int, showhidden: str|bool):
     """
         HTTP GET
             Returns list of food objects by cuisine. (admins see unlisting and public by default, private based on parameters)
