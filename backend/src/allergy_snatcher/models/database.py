@@ -33,7 +33,7 @@ class User(Base):
     # User's primary email address. Also unique.
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     
-    role: Mapped[str] = mapped_column(String(50), nullable=True)
+    role: Mapped[Literal["admin","user"]] = mapped_column(ENUM("admin","user"), nullable=False, default="user")
     first_name: Mapped[str] = mapped_column(String(100), nullable=True)
     last_name: Mapped[str] = mapped_column(String(100), nullable=True)
 
@@ -82,7 +82,7 @@ class Password(Base):
 
     user: Mapped[User] = relationship(back_populates="password")
 
-    role: Mapped[Literal["admin","user"]] = mapped_column(ENUM("admin","user"), nullable=False, default="user")
+    
     
     def __repr__(self) -> str:
         return f"<Password(user_id={self.user_id!r})>"
