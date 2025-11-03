@@ -3,7 +3,8 @@ import os
 from allergy_snatcher.models.database import db
 from allergy_snatcher.routes.auth import init_app as auth_init_app
 
-def main() -> Flask:
+def create_app() -> Flask:
+    """Creates and configures the Flask app."""
     app = Flask(__name__, static_folder='../static', static_url_path='/')
     db_user = os.environ.get('DB_USER')
     db_password = os.environ.get('DB_PASSWORD')
@@ -80,7 +81,10 @@ def main() -> Flask:
 
     return app
 
+# Create the app instance for Gunicorn to find
+app = create_app()
+
 if __name__ == "__main__":
-    app = main()
+    # This block is now just for local development (e.g., `python -m src.allergy_snatcher`)
     is_debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
     app.run(debug=is_debug, host="0.0.0.0", port=5000)
