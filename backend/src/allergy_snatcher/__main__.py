@@ -4,7 +4,7 @@ from allergy_snatcher.routes.auth import init_app as auth_init_app
 
 def main() -> None:
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://myuser:mypassword@db:3306/mydatabase'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'supersecretkey' # Change this in production
 
