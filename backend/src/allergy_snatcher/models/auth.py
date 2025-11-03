@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import request, g, jsonify
 from .database import UserSession, User
+from datatime import datetime
 
 def require_session(f):
     @wraps(f)
@@ -14,6 +15,12 @@ def require_session(f):
             return jsonify({"error": "Invalid session token"}), 401
 
         # You might want to check for session expiry here
+        if user_session.expires_at < datetime.datetime.now():
+            return jsonify({"error": "Session expired"}), 401
+            
+        user = User.query.get(user_session.user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
         
         g.user = user_session.user
         return f(*args, **kwargs)
