@@ -227,7 +227,7 @@ def create_food():
     try:
         data = request.get_json()
         validated_data = CreateFoodSchema(**data)
-        
+        validated_data.publication_status = 'private'
         new_food = Food(
             name=validated_data.name,
             brand=validated_data.brand,
