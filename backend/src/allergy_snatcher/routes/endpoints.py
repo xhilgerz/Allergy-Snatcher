@@ -166,7 +166,8 @@ def update_food_by_id(food_id):
 
         if g.user.role == 'admin':
             if food.publication_status == 'public' or food.user_id != g.user.id:
-                require_force()
+                if request.headers.get('confirmation') != 'force':
+                    return jsonify({"error": "Confirmation required to modify public/other users' data"}), 400
         elif food.publication_status == 'public':
             return jsonify({"error": "Forbidden"}), 403
         elif food.user_id != g.user.id:
@@ -203,12 +204,21 @@ def delete_food_by_id(food_id):
         if not food:
             return jsonify({"error": "Food not found"}), 404
 
+        # Admin access logic
         if g.user.role == 'admin':
-            require_force()
-        elif food.publication_status == 'public':
-            return jsonify({"error": "Forbidden"}), 403
-        elif food.user_id != g.user.id:
-            return jsonify({"error": "Forbidden"}), 403
+            if request.headers.get('confirmation') != 'force':
+                return jsonify({"error": "Confirmation required for admin deletion"}), 400
+        
+        # Contributor (non-admin) access logic
+        else:
+            if food.publication_status == 'public':
+                return jsonify({"error": "Forbidden: Contributors cannot delete public items"}), 403
+            if food.user_id != g.user.id:
+                return jsonify({"error": "Forbidden: You are not the owner of this item"}), 403
+            
+            # Force check for contributor deleting their own item
+            if request.headers.get('confirmation') != 'force':
+                return jsonify({"error": "Confirmation required to delete your own item"}), 400
         
         db.session.delete(food)
         db.session.commit()
