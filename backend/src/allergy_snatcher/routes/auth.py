@@ -1,7 +1,10 @@
-from flask import Blueprint, request, url_for, session, redirect, jsonify
+from flask import Blueprint, request, url_for, session, redirect, jsonify, g
 from authlib.integrations.flask_client import OAuth
 from werkzeug.security import generate_password_hash, check_password_hash
-from ..models.database import db, User, Password, OAuthAccount
+from ..models.database import db, User, Password, OAuthAccount, UserSession
+from ..models.auth import require_session
+import secrets
+import datetime
 
 oauth = OAuth()
 auth_bp = Blueprint('auth', __name__)
@@ -42,13 +45,153 @@ def login():
     if not user or not user.password or not check_password_hash(user.password.password_hash, password):
         return jsonify({'error': 'Invalid username or password'}), 401
 
-    session['user_id'] = user.id
-    return jsonify({'message': 'Logged in successfully'})
+    # Create a new session
+    session_token = secrets.token_hex(32)
+    refresh_token = secrets.token_hex(32)
+    
+    # Define expiry times
+    session_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
+    refresh_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30)
 
-@auth_bp.route('/logout')
+    new_session = UserSession(
+        user_id=user.id,
+        session_token=session_token,
+        expires_at=session_expiry,
+        refresh_token=refresh_token,
+        refresh_token_expires_at=refresh_expiry
+    )
+    db.session.add(new_session)
+    db.session.commit()
+
+    response = jsonify({
+        'message': 'Logged in successfully',
+        'session_token': session_token,
+        'expires_at': session_expiry.isoformat()
+    })
+    
+    response.set_cookie(
+        'refresh_token', 
+        refresh_token, 
+        httponly=True, 
+        secure=True, # Set to False if not using HTTPS in development
+        samesite='Lax',
+        expires=refresh_expiry
+    )
+    
+    return response
+
+@auth_bp.route('/refresh', methods=['POST'])
+def refresh():
+    refresh_token = request.cookies.get('refresh_token')
+
+    if not refresh_token:
+        return jsonify({'error': 'Missing refresh token'}), 401
+
+    user_session = UserSession.query.filter_by(refresh_token=refresh_token).first()
+
+    if not user_session:
+        return jsonify({'error': 'Invalid refresh token'}), 401
+
+    if user_session.refresh_token_expires_at < datetime.datetime.now(datetime.timezone.utc):
+        # For security, if a compromised refresh token is used after expiry, delete the session.
+        db.session.delete(user_session)
+        db.session.commit()
+        return jsonify({'error': 'Refresh token expired'}), 401
+
+    # --- Token Rotation ---
+    # Generate new tokens
+    new_session_token = secrets.token_hex(32)
+    new_refresh_token = secrets.token_hex(32)
+    
+    # Define new expiry times
+    new_session_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
+    new_refresh_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30)
+
+    # Update the session in the database
+    user_session.session_token = new_session_token
+    user_session.expires_at = new_session_expiry
+    user_session.refresh_token = new_refresh_token
+    user_session.refresh_token_expires_at = new_refresh_expiry
+    
+    db.session.commit()
+
+    response = jsonify({
+        'message': 'Token refreshed successfully',
+        'session_token': new_session_token,
+        'expires_at': new_session_expiry.isoformat()
+    })
+    
+    response.set_cookie(
+        'refresh_token', 
+        new_refresh_token, 
+        httponly=True, 
+        secure=True, # Set to False if not using HTTPS in development
+        samesite='Lax',
+        expires=new_refresh_expiry
+    )
+    
+    return response
+
+@auth_bp.route('/status', methods=['GET'])
+def status():
+    """
+    Checks if a user is logged in by verifying their session token.
+    Returns a 200 OK status in all cases, with a JSON body
+    indicating the authentication state.
+    """
+    auth_header = request.headers.get('Authorization')
+    
+    # Default response for a non-authenticated user
+    not_logged_in_response = jsonify({"logged_in": False, "user": None})
+
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return not_logged_in_response, 200
+
+    try:
+        session_token = auth_header.split(' ')[1]
+    except IndexError:
+        return not_logged_in_response, 200
+
+    if not session_token:
+        return not_logged_in_response, 200
+
+    user_session = UserSession.query.filter_by(session_token=session_token).first()
+
+    if not user_session:
+        return not_logged_in_response, 200
+        
+    if user_session.expires_at < datetime.datetime.now(datetime.timezone.utc):
+        return not_logged_in_response, 200
+
+    # If all checks pass, the user is logged in.
+    user = user_session.user
+    
+    return jsonify({
+        "logged_in": True,
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "role": user.role,
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        }
+    }), 200
+
+@auth_bp.route('/logout', methods=['POST'])
+@require_session
 def logout():
-    session.pop('user_id', None)
-    return redirect('/')
+    # The require_session decorator puts the session object in g
+    user_session = g.session 
+
+    db.session.delete(user_session)
+    db.session.commit()
+
+    response = jsonify({'message': 'Logged out successfully'})
+    # Also instruct the client to clear the refresh token cookie
+    response.delete_cookie('refresh_token', path='/', samesite='Lax')
+    
+    return response
 
 @auth_bp.route('/oauth/<provider>')
 def oauth_login(provider):

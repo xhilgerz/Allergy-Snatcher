@@ -1,12 +1,17 @@
 from functools import wraps
 from flask import request, g, jsonify
 from .database import UserSession, User
-from datatime import datetime
+import datetime
 
 def require_session(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        session_token = request.cookies.get('session_token')
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({"error": "Missing or invalid Authorization header"}), 401
+        
+        session_token = auth_header.split(' ')[1]
+
         if not session_token:
             return jsonify({"error": "Missing session token"}), 401
 
@@ -15,14 +20,16 @@ def require_session(f):
             return jsonify({"error": "Invalid session token"}), 401
 
         # You might want to check for session expiry here
-        if user_session.expires_at < datetime.datetime.now():
+        if user_session.expires_at < datetime.datetime.now(datetime.timezone.utc):
+            # Log the user out, or if refresh oauth token is available, try to renew the session token
             return jsonify({"error": "Session expired"}), 401
             
         user = User.query.get(user_session.user_id)
         if not user:
             return jsonify({"error": "User not found"}), 404
         
-        g.user = user_session.user
+        g.user = user
+        g.session = user_session # Store the session object for easy access
         return f(*args, **kwargs)
     return decorated_function
 

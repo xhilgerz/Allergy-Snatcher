@@ -136,7 +136,15 @@ class UserSession(Base):
     session_token: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     expires_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), nullable=False,
                                                            default=lambda: datetime.datetime.now() + 
-                                                           datetime.timedelta(hours=6)) # default 6 hours from now
+                                                           datetime.timedelta(hours=1)) # default 1 hour from now
+    
+    refresh_token: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    refresh_token_expires_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), 
+        nullable=False,
+        default=lambda: datetime.datetime.now() + datetime.timedelta(days=30) # default 30 days from now
+    )
+    
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
