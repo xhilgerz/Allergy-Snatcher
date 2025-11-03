@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, g
+from ..models.auth import require_session, require_role, require_force
 from ..models.database import Category, Cuisine, db, Food, Ingredient
 from ..models.http import (
     CategorySchema, CuisineSchema, CreateCategorySchema, CreateCuisineSchema, 
@@ -50,8 +51,8 @@ def get_food_by_id(food_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@routes.route("/api/foods/category/<int:category_id>", methods=['GET'])
-def get_food_by_category(category_id):
+@routes.route("/api/foods/category/<int:category_id>/<int:limit>/<int:offset>", methods=['GET'])
+def get_food_by_category(category_id, limit, offset):
     """
         HTTP GET
             Returns list of food objects by category. (admins see unlisting and public by default, private based on parameters)
@@ -66,7 +67,7 @@ def get_food_by_category(category_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@routes.route("/api/foods/cuisine/<int:cuisine_id>", methods=['GET'])
+@routes.route("/api/foods/cuisine/<int:cuisine_id>/<int:limit>/<int:offset>", methods=['GET'])
 def get_food_by_cuisine(cuisine_id):
     """
         HTTP GET
@@ -83,6 +84,7 @@ def get_food_by_cuisine(cuisine_id):
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/foods/<int:food_id>", methods=['PATCH'])
+@require_session
 def update_food_by_id(food_id):
     """
         HTTP PATCH
@@ -97,6 +99,14 @@ def update_food_by_id(food_id):
         food = Food.query.get(food_id)
         if not food:
             return jsonify({"error": "Food not found"}), 404
+
+        if g.user.role == 'admin':
+            if food.publication_status == 'public' or food.user_id != g.user.id:
+                require_force()
+        elif food.publication_status == 'public':
+            return jsonify({"error": "Forbidden"}), 403
+        elif food.user_id != g.user.id:
+            return jsonify({"error": "Forbidden"}), 403
 
         data = request.get_json()
         validated_data = UpdateFoodSchema(**data)
@@ -117,6 +127,7 @@ def update_food_by_id(food_id):
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/foods/<int:food_id>", methods=['DELETE'])
+@require_session
 def delete_food_by_id(food_id):
     """
         HTTP DELETE
@@ -127,6 +138,13 @@ def delete_food_by_id(food_id):
         food = Food.query.get(food_id)
         if not food:
             return jsonify({"error": "Food not found"}), 404
+
+        if g.user.role == 'admin':
+            require_force()
+        elif food.publication_status == 'public':
+            return jsonify({"error": "Forbidden"}), 403
+        elif food.user_id != g.user.id:
+            return jsonify({"error": "Forbidden"}), 403
         
         db.session.delete(food)
         db.session.commit()
@@ -136,6 +154,7 @@ def delete_food_by_id(food_id):
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/foods/", methods=['PUT'])
+@require_session
 def create_food():
     """
     HTTP PUT
@@ -177,6 +196,7 @@ def create_food():
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/categories/", methods=['POST'])
+@require_role('admin')
 def create_category():
     """
     HTTP POST
@@ -195,6 +215,7 @@ def create_category():
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/cuisines/", methods=['POST'])
+@require_role('admin')
 def create_cuisine():
     """
     HTTP POST
@@ -213,6 +234,7 @@ def create_cuisine():
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/categories/<int:category_id>", methods=['DELETE'])
+@require_role('admin')
 def delete_category_by_id(category_id):
     """
     HTTP DELETE
@@ -231,6 +253,7 @@ def delete_category_by_id(category_id):
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/cuisines/<int:cuisine_id>", methods=['DELETE'])
+@require_role('admin')
 def delete_cuisine_by_id(cuisine_id):
     """
     HTTP DELETE

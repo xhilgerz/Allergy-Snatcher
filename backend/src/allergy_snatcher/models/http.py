@@ -81,9 +81,14 @@ class FoodSchema(BaseModel):
     serving_unit: Optional[str] = None
     category_id: int
     cuisine_id: Optional[int] = None
-    ingredients: List[IngredientSchema] = []
-
     model_config = {"from_attributes": True}
+
+class FoodListSchema(BaseModel):
+    """
+    Schema for a list of food items.
+    """
+    foods: List[FoodSchema]
+
 
 class CreateIngredientSchema(BaseModel):
     """
