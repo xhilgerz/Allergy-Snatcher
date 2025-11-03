@@ -11,7 +11,8 @@ import importlib
 required_modules = {
     "pydantic": "pydantic",
     "pymysql": "PyMySQL",
-    "yaml": "PyYAML"
+    "yaml": "PyYAML",
+    "cryptography": "cryptography"
 }
 missing_modules = []
 
@@ -302,7 +303,12 @@ else:
     if dbengine is not None:
         try:
             with dbengine.cursor() as cursor:
-                cursor.execute(dbscript)
+                # PyMySQL does not support multi-statement queries in a single .execute() call.
+                # We must split the script into individual statements and execute them one by one.
+                for statement in dbscript.split(';'):
+                    # Skip empty statements that can result from splitting
+                    if statement.strip():
+                        cursor.execute(statement)
                 dbengine.commit()
         except Exception as e:
             logger.error(f"Failed to execute database script: {e}")
