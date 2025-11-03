@@ -5,7 +5,16 @@ from allergy_snatcher.routes.auth import init_app as auth_init_app
 
 def main() -> None:
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://myuser:mypassword@db:3306/mydatabase'
+    db_user = os.environ.get('DB_USER')
+    db_password = os.environ.get('DB_PASSWORD')
+    db_host = os.environ.get('DB_HOST')
+    db_port = os.environ.get('DB_PORT')
+    db_name = os.environ.get('DB_NAME')
+
+    if not all([db_user, db_password, db_host, db_port, db_name]):
+        raise ValueError('One or more database environment variables are not set')
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', None) # Change this in production
     if not app.config['SECRET_KEY']:
@@ -64,7 +73,8 @@ def main() -> None:
     with app.app_context():
         db.create_all()
 
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    is_debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(debug=is_debug, host="0.0.0.0", port=5000)
 
 if __name__ == "__main__":
     main()
