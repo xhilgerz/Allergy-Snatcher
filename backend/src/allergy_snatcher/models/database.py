@@ -6,9 +6,10 @@ designed for MySQL 8.
 # Allows for forward-referencing type hints in relationships (e.g., Mapped["User"])
 from __future__ import annotations
 import datetime
-from typing import List
+from typing import List, Literal
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, DateTime, ForeignKey, UniqueConstraint, func, Float, Text
+from sqlalchemy.dialects.mysql import ENUM
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 db = SQLAlchemy()
@@ -80,6 +81,8 @@ class Password(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
     user: Mapped[User] = relationship(back_populates="password")
+
+    role: Mapped[Literal["admin","user"]] = mapped_column(ENUM("admin","user"), nullable=False, default="user")
     
     def __repr__(self) -> str:
         return f"<Password(user_id={self.user_id!r})>"
@@ -200,6 +203,13 @@ class Food(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     brand: Mapped[str] = mapped_column(String(100), nullable=True)
+    # Defines the publication status of the food item:
+    # - 'public': Approved by an admin and publicly visible.
+    # - 'private': Contributor is not ready to share; visible only to admins and the contributor.
+    # - 'unlisting': Contributor has requested publication; pending admin review.
+    publication_status: Mapped[Literal["public", "private", "unlisting"]] = mapped_column(
+        ENUM("public", "private", "unlisting"), default="private", nullable=False
+    )
     
     # Nutritional info
     dietary_fiber: Mapped[float] = mapped_column(Float, nullable=True)
