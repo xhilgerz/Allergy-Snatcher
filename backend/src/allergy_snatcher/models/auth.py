@@ -50,3 +50,28 @@ def require_force(f):
             return jsonify({"error": "Confirmation required"}), 400
         return f(*args, **kwargs)
     return decorated_function
+
+def optional_session(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        g.user = None
+        g.session = None
+        auth_header = request.headers.get('Authorization')
+        
+        if auth_header and auth_header.startswith('Bearer '):
+            try:
+                session_token = auth_header.split(' ')[1]
+            except IndexError:
+                session_token = None
+
+            if session_token:
+                user_session = UserSession.query.filter_by(session_token=session_token).first()
+                
+                if user_session and user_session.expires_at > datetime.datetime.now(datetime.timezone.utc):
+                    user = User.query.get(user_session.user_id)
+                    if user:
+                        g.user = user
+                        g.session = user_session
+        
+        return f(*args, **kwargs)
+    return decorated_function
