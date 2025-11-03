@@ -4,7 +4,7 @@ from allergy_snatcher.models.database import db
 from allergy_snatcher.routes.auth import init_app as auth_init_app
 
 def main() -> None:
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='../static', static_url_path='/')
     db_user = os.environ.get('DB_USER')
     db_password = os.environ.get('DB_PASSWORD')
     db_host = os.environ.get('DB_HOST')
@@ -19,7 +19,7 @@ def main() -> None:
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', None) # Change this in production
     if not app.config['SECRET_KEY']:
         raise ValueError('SECRET_KEY is not set')
-    
+
 
     oauth_providers = {}
 
@@ -69,6 +69,11 @@ def main() -> None:
     from allergy_snatcher.routes.auth import auth_bp
     app.register_blueprint(routes)
     app.register_blueprint(auth_bp)
+
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def catch_all(path):
+        return app.send_static_file('index.html')
 
     with app.app_context():
         db.create_all()

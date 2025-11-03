@@ -8,11 +8,9 @@ services:
       - "3000:3000"
     depends_on:
       - backend
-    develop:
-      watch:
-        - path: ./frontend
-          target: "/usr/share/nginx/html"
-          action: sync
+    volumes:
+      - ./allergy_app:/app
+      - /app/node_modules
 
   backend:
     build:
@@ -20,24 +18,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5001:5000"
-    develop:
-      watch:
-        - path: ./backend/src/
-          target: "/home/appuser/app/src/"
-          action: rebuild
-        - path: ./backend/pyproject.toml
-          target: "/home/appuser/app/pyproject.toml"
-          action: rebuild
-        - path: ./backend/requirements.txt
-          target: "/home/appuser/app/requirements.txt"
-          action: rebuild
-        - path: ./backend/uv.lock
-          target: "/home/appuser/app/uv.lock"
-          action: rebuild
-        - path: ./backend/Dockerfile
-          action: rebuild
-        - path: ./backend/.dockerignore
-          action: rebuild
+    volumes:
+      - ./backend:/home/appuser/app
+    command: uvicorn allergy_snatcher.main:app --host 0.0.0.0 --port 5000 --reload
         
   db:
     image: mysql:8.0
