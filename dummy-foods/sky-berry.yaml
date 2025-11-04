@@ -1,0 +1,26 @@
+name: Sky-Berry Yogurt
+brand: Nimbus Dairy
+ingredients:
+  - Cultured Milk
+  - Cloudberries
+  - Cane Sugar
+  - Live Cultures
+nutrition:
+  fats:
+    total: 8
+    saturated: 5
+    trans: 0
+  cholesterol: 25
+  sodium: 80
+  carbohydrates: 22
+  dietary_fiber: 1
+  total_sugars: 18
+  added_sugars: 12
+  protein: 6
+servings:
+  size: 150
+  unit: g
+category: Dairy
+cuisine: null
+dietary_restrictions:
+  - Contains Dairy

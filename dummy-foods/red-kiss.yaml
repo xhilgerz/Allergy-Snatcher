@@ -1,0 +1,27 @@
+name: Vampire's Kiss Soda
+brand: Nocturne Beverages
+ingredients:
+  - Carbonated Water
+  - Cane Sugar
+  - Citric Acid
+  - Natural Pomegranate Flavor
+  - "Red #40"
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 30
+  carbohydrates: 38
+  dietary_fiber: 0
+  total_sugars: 38
+  added_sugars: 38
+  protein: 0
+servings:
+  size: 1
+  unit: item
+category: Soda
+cuisine: Gothic
+dietary_restrictions:
+  - Caffeinated

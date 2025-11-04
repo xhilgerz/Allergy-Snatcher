@@ -1,0 +1,27 @@
+name: Ancient Grain Crackers
+brand: Pharaoh's Fields
+ingredients:
+  - Spelt Flour
+  - Amaranth
+  - Quinoa
+  - Sunflower Oil
+  - Sea Salt
+nutrition:
+  fats:
+    total: 7
+    saturated: 0.5
+    trans: 0
+  cholesterol: 0
+  sodium: 190
+  carbohydrates: 18
+  dietary_fiber: 3
+  total_sugars: 0
+  added_sugars: 0
+  protein: 3
+servings:
+  size: 6
+  unit: item
+category: Crackers
+cuisine: null
+dietary_restrictions:
+  - Vegan

@@ -1,0 +1,25 @@
+name: Slime-Mold Jelly
+brand: Ooze Organics
+ingredients:
+  - Cultured Slime Gelatin
+  - Fruit Pectin
+  - Sugar
+  - Citric Acid
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 10
+  carbohydrates: 13
+  dietary_fiber: 0
+  total_sugars: 12
+  added_sugars: 10
+  protein: 0
+servings:
+  size: 1
+  unit: tbsp
+category: Condiment
+cuisine: Monster
+dietary_restrictions: []

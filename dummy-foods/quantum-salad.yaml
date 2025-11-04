@@ -1,0 +1,27 @@
+name: Quantum Quinoa Salad
+brand: Particle Provisions
+ingredients:
+  - Entangled Quinoa
+  - Diced Bell Peppers
+  - Cucumber
+  - Lemon-Vinaigrette
+nutrition:
+  fats:
+    total: 10
+    saturated: 1
+    trans: 0
+  cholesterol: 0
+  sodium: 250
+  carbohydrates: 30
+  dietary_fiber: 5
+  total_sugars: 3
+  added_sugars: 0
+  protein: 7
+servings:
+  size: 1
+  unit: cup
+category: Prepared Meal
+cuisine: Fusion
+dietary_restrictions:
+  - Vegan
+  - Gluten-Free

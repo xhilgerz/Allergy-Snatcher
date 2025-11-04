@@ -1,0 +1,28 @@
+name: Cryo-Stasis Popsicle
+brand: Future Freeze
+ingredients:
+  - Water
+  - Blue Raspberry Flavoring
+  - Citric Acid
+  - Stabilizers
+  - Sucralose
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 5
+  carbohydrates: 3
+  dietary_fiber: 0
+  total_sugars: 0
+  added_sugars: 0
+  protein: 0
+servings:
+  size: 1
+  unit: item
+category: Frozen Dessert
+cuisine: Sci-Fi
+dietary_restrictions:
+  - Sugar-Free
+  - Low-Calorie

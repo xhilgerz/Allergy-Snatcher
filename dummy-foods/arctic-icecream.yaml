@@ -1,0 +1,27 @@
+name: Arctic Ice Cream (Mint Shard)
+brand: Polar Pantry
+ingredients:
+  - Cream
+  - Milk
+  - Sugar
+  - Peppermint Extract
+  - Dark Chocolate Shards
+nutrition:
+  fats:
+    total: 14
+    saturated: 9
+    trans: 0.5
+  cholesterol: 45
+  sodium: 50
+  carbohydrates: 20
+  dietary_fiber: 1
+  total_sugars: 18
+  added_sugars: 15
+  protein: 3
+servings:
+  size: 0.66
+  unit: cup
+category: Frozen Dessert
+cuisine: null
+dietary_restrictions:
+  - Contains Dairy

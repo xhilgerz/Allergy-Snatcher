@@ -1,0 +1,24 @@
+name: Cosmic Crunch Cereal
+brand: Galaxy Foods
+ingredients:
+  - Puffed Quasars
+  - Dried Nebula Berries
+  - Crystallized Stardust
+nutrition:
+  fats:
+    total: 5
+    saturated: 1
+    trans: 0
+  cholesterol: 0
+  sodium: 150
+  carbohydrates: 35
+  dietary_fiber: 4
+  total_sugars: 12
+  added_sugars: 10
+  protein: 3
+servings:
+  size: 1.5
+  unit: cup
+category: Breakfast Cereal
+cuisine: Intergalactic
+dietary_restrictions: []

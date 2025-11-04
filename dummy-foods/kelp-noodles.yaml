@@ -1,0 +1,26 @@
+name: Deep Sea Kelp Noodles
+brand: Atlantean Harvest
+ingredients:
+  - Bioluminescent Kelp
+  - Sea Salt
+  - Filtered Trench Water
+nutrition:
+  fats:
+    total: 1
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 600
+  carbohydrates: 10
+  dietary_fiber: 3
+  total_sugars: 0
+  added_sugars: 0
+  protein: 2
+servings:
+  size: 1
+  unit: cup
+category: Pasta Alternative
+cuisine: Atlantean
+dietary_restrictions:
+  - Gluten-Free
+  - Low-Carb
