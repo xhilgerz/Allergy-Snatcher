@@ -2,6 +2,31 @@
 
 This document outlines the API endpoints for the Allergy Snatcher application, covering authentication, food data management, and administrative tasks.
 
+- [Allergy Snatcher API Documentation](#allergy-snatcher-api-documentation)
+  - [Authentication](#authentication)
+- [Authentication Routes](#authentication-routes)
+    - [`POST /auth/register`](#post-authregister)
+    - [`POST /auth/login`](#post-authlogin)
+    - [`POST /auth/refresh`](#post-authrefresh)
+    - [`GET /auth/status`](#get-authstatus)
+    - [`POST /auth/logout`](#post-authlogout)
+- [API Routes](#api-routes)
+  - [Food Endpoints](#food-endpoints)
+    - [`GET /api/foods/<food_id>`](#get-apifoodsfood_id)
+    - [`PATCH /api/foods/<food_id>`](#patch-apifoodsfood_id)
+    - [`DELETE /api/foods/<food_id>`](#delete-apifoodsfood_id)
+    - [`PUT /api/foods/`](#put-apifoods)
+    - [`GET /api/foods/category/<category_id>/<limit>/<offset>/<showhidden>`](#get-apifoodscategorycategory_idlimitoffsetshowhidden)
+    - [`GET /api/foods/cuisine/<cuisine_id>/<limit>/<offset>/<showhidden>`](#get-apifoodscuisinecuisine_idlimitoffsetshowhidden)
+  - [Category \& Cuisine Endpoints](#category--cuisine-endpoints)
+    - [`GET /api/categories/`](#get-apicategories)
+    - [`POST /api/categories/`](#post-apicategories)
+    - [`DELETE /api/categories/<category_id>`](#delete-apicategoriescategory_id)
+    - [`GET /api/cuisines/`](#get-apicuisines)
+    - [`POST /api/cuisines/`](#post-apicuisines)
+    - [`DELETE /api/cuisines/<cuisine_id>`](#delete-apicuisinescuisine_id)
+
+
 ## Authentication
 
 Authentication is handled via session tokens. A successful login provides a short-lived `session_token` (sent in the response body) and a long-lived `refresh_token` (sent as an `HttpOnly` cookie).
