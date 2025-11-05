@@ -2,15 +2,19 @@ from flask import Flask
 import os
 from allergy_snatcher.models.database import db
 from allergy_snatcher.routes.auth import init_app as auth_init_app
+from flask_cors import CORS
 
 def create_app() -> Flask:
     """Creates and configures the Flask app."""
     app = Flask(__name__, static_folder='../static', static_url_path='/')
+
+
     db_user = os.environ.get('DB_USER')
     db_password = os.environ.get('DB_PASSWORD')
     db_host = os.environ.get('DB_HOST')
     db_port = os.environ.get('DB_PORT')
     db_name = os.environ.get('DB_NAME')
+    
 
     if not all([db_user, db_password, db_host, db_port, db_name]):
         raise ValueError('One or more database environment variables are not set')
@@ -71,6 +75,8 @@ def create_app() -> Flask:
     app.register_blueprint(routes)
     app.register_blueprint(auth_bp)
 
+    CORS(app, origins=["http://localhost:3000"])
+
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def catch_all(path):
@@ -87,4 +93,4 @@ app = create_app()
 if __name__ == "__main__":
     # This block is now just for local development (e.g., `python -m src.allergy_snatcher`)
     is_debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
-    app.run(debug=is_debug, host="0.0.0.0", port=5000)
+    app.run(debug=is_debug, host="0.0.0.0", port=5001)

@@ -11,3 +11,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.Card {
+  background-color: #ffffff;
+  padding: 1%;
+  margin: 10px; /* Spacing between cards */
+  width: 200px; /* Fixed width for consistent layout */
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 10px; 
+  height:400px
+}
