@@ -27,6 +27,8 @@ def require_session(f):
         user = User.query.get(user_session.user_id)
         if not user:
             return jsonify({"error": "User not found"}), 404
+        if user.role == 'disabled':
+            return jsonify({"error": "User is disabled"}), 403
         
         g.user = user
         g.session = user_session # Store the session object for easy access
@@ -69,7 +71,7 @@ def optional_session(f):
                 
                 if user_session and user_session.expires_at > datetime.datetime.now(datetime.timezone.utc):
                     user = User.query.get(user_session.user_id)
-                    if user:
+                    if user and user.role != 'disabled':
                         g.user = user
                         g.session = user_session
         
