@@ -35,6 +35,40 @@ def get_cuisines():
     cuisine_schemas = [CuisineSchema.model_validate(c).model_dump() for c in cuisines]
     return jsonify(cuisine_schemas)
 
+@routes.route("/api/foods/<int:limit>/<int:offset>/<string:showhidden>", methods=['GET'])
+@optional_session
+def get_foods(showhidden: str|bool, limit: int, offset: int):
+    """
+    HTTP GET
+        Returns a list of food objects from the database. Gets list of all public foods, includes
+        unlisting foods (if admin) and private foods (if owned by contributor). With admins, showprivate
+        will show all private foods. Unauthenticated users will only receive public foods, regardless
+        of the showhidden parameter.
+        Doesn't require authentication.
+    """
+    try:
+        showhidden = str(showhidden).lower() == 'true'
+        query = Food.query
+
+        if g.user and g.user.role == 'admin':
+            if not showhidden:
+                query = query.filter(Food.publication_status != 'private')
+        elif g.user:
+            query = query.filter(
+                or_(
+                    Food.publication_status == 'public',
+                    Food.user_id == g.user.id
+                )
+            )
+        else:
+            query = query.filter(Food.publication_status == 'public')
+
+        foods = query.limit(limit).offset(offset).all()
+        food_schemas = [FoodSchema.model_validate(f).model_dump() for f in foods]
+        return jsonify(food_schemas)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
 @routes.route("/api/foods/<int:food_id>", methods=['GET'])
 @optional_session
 def get_food_by_id(food_id):
