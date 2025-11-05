@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify, request, g
 from sqlalchemy import or_
 from ..models.auth import require_session, require_role, require_force, optional_session
-from ..models.database import Category, Cuisine, db, Food, Ingredient, DietaryRestriction
+from ..models.database import Category, Cuisine, db, Food, Ingredient, DietaryRestriction, DietRestrictAssoc
 from ..models.http import (
     CategorySchema, CuisineSchema, CreateCategorySchema, CreateCuisineSchema, 
-    DietaryRestrictionSchema, FoodSchema, CreateFoodSchema, CreateIngredientSchema, UpdateFoodSchema
+    DietaryRestrictionSchema, CreateDietaryRestrictionSchema, FoodSchema, CreateFoodSchema, CreateIngredientSchema, UpdateFoodSchema
 )
 
 
@@ -168,6 +168,50 @@ def get_food_by_cuisine(cuisine_id: int, limit: int, offset: int, showhidden: st
     try:
         showhidden = showhidden.lower() == 'true'
         query = Food.query.filter_by(cuisine_id=cuisine_id)
+
+        if g.user and g.user.role == 'admin':
+            if not showhidden:
+                # Admin sees public, unlisting, and their own private foods by default
+                query = query.filter(
+                    or_(
+                        Food.publication_status != 'private',
+                        Food.user_id == g.user.id
+                    )
+                )
+            # if showhidden is True, admin sees all, so no filter is applied
+        elif g.user:
+            # Authenticated user (contributor) sees public food and their own private/unlisting food
+            query = query.filter(
+                or_(
+                    Food.publication_status == 'public',
+                    Food.user_id == g.user.id
+                )
+            )
+        else:
+            # Unauthenticated user sees only public food
+            query = query.filter(Food.publication_status == 'public')
+
+        foods = query.limit(limit).offset(offset).all()
+        food_schemas = [FoodSchema.model_validate(f).model_dump() for f in foods]
+        return jsonify(food_schemas)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@routes.route("/api/foods/diet-restriction/<int:restriction_id>/<int:limit>/<int:offset>/<string:showhidden>", methods=['GET'])
+@optional_session
+def get_food_by_diet_restriction(restriction_id: int, limit: int, offset: int, showhidden: str|bool):
+    """
+        HTTP GET
+            Returns list of food objects by dietary restriction. (admins see unlisting and public by default, private based on parameters)
+            Doesn't require authentication. If unauthenticated, returns all public foods.
+            If authenticated, returns all food if admin, returns all public and private if contributor.
+            Admins may list private foods that are not theirs with the showhidden parameter, this options
+            has no effect if the user is not an admin.
+            Additional parameters include length of results and offsets (so not all results are returned at once enabling paging)
+    """
+    try:
+        showhidden = str(showhidden).lower() == 'true'
+        query = Food.query.join(DietRestrictAssoc).filter(DietRestrictAssoc.restriction_id == restriction_id)
 
         if g.user and g.user.role == 'admin':
             if not showhidden:
