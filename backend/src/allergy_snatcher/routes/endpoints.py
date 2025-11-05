@@ -357,6 +357,25 @@ def create_cuisine():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@routes.route("/api/diet-restrictions/", methods=['POST'])
+@require_role('admin')
+def create_diet_restriction():
+    """
+    HTTP POST
+        Insert new diet restriction object. Session auth required (admin only).
+    """
+    try:
+        data = request.get_json()
+        validated_data = CreateDietaryRestrictionSchema(**data)
+        
+        new_restriction = DietaryRestriction(restriction=validated_data.restriction)
+        db.session.add(new_restriction)
+        db.session.commit()
+        
+        return jsonify(DietaryRestrictionSchema.model_validate(new_restriction).model_dump()), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
 @routes.route("/api/categories/<int:category_id>", methods=['DELETE'])
 @require_role('admin')
 def delete_category_by_id(category_id):
@@ -392,6 +411,25 @@ def delete_cuisine_by_id(cuisine_id):
         db.session.commit()
         
         return jsonify({"message": "Cuisine deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@routes.route("/api/diet-restrictions/<int:restriction_id>", methods=['DELETE'])
+@require_role('admin')
+def delete_diet_restriction_by_id(restriction_id):
+    """
+    HTTP DELETE
+        Deletes dietary restriction object. No DB references to the restriction must exist before deleting. Session auth required (admin only).
+    """
+    try:
+        restriction = DietaryRestriction.query.get(restriction_id)
+        if not restriction:
+            return jsonify({"error": "Dietary restriction not found"}), 404
+        
+        db.session.delete(restriction)
+        db.session.commit()
+        
+        return jsonify({"message": "Dietary restriction deleted successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
