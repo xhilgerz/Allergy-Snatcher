@@ -1,21 +1,19 @@
 // src/api/api.js
 
-const BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "http://backend:5000" // inside Docker Compose network
-    : "http://localhost:5000"; // when testing locally
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:5001";
 
 export async function getFoods() {
   try {
-    const response = await fetch(`${BASE_URL}/api/foods`);
+    const response = await fetch(`${API_BASE}/api/foods/10/0/True`);
     if (!response.ok) {
       throw new Error("Failed to fetch foods");
     }
     const data = await response.json();
-    console.log("✅ Data fetched from Flask:", data); 
+    console.log(" Data fetched from Flask:", data); 
     return data;
   } catch (error) {
     console.error("Error fetching foods:", error);
     throw error;
   }
+
 }
