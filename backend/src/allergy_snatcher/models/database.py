@@ -33,7 +33,7 @@ class User(Base):
     # User's primary email address. Also unique.
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     
-    role: Mapped[Literal["admin","user"]] = mapped_column(ENUM("admin","user"), nullable=False, default="user")
+    role: Mapped[Literal["admin","user","disabled"]] = mapped_column(ENUM("admin","user","disabled"), nullable=False, default="user")
     first_name: Mapped[str] = mapped_column(String(100), nullable=True)
     last_name: Mapped[str] = mapped_column(String(100), nullable=True)
 

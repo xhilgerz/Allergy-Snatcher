@@ -4,7 +4,7 @@ CREATE TABLE users (
     id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    role ENUM('admin','user') NOT NULL DEFAULT 'user',
+    role ENUM('admin','user', 'disabled') NOT NULL DEFAULT 'user',
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
