@@ -18,13 +18,17 @@ This document outlines the API endpoints for the Allergy Snatcher application, c
     - [`PUT /api/foods/`](#put-apifoods)
     - [`GET /api/foods/category/<category_id>/<limit>/<offset>/<showhidden>`](#get-apifoodscategorycategory_idlimitoffsetshowhidden)
     - [`GET /api/foods/cuisine/<cuisine_id>/<limit>/<offset>/<showhidden>`](#get-apifoodscuisinecuisine_idlimitoffsetshowhidden)
-  - [Category \& Cuisine Endpoints](#category--cuisine-endpoints)
+    - [`GET /api/foods/diet-restriction/<restriction_id>/<limit>/<offset>/<showhidden>`](#get-apifoodsdiet-restrictionrestriction_idlimitoffsetshowhidden)
+  - [Category, Cuisine, & Dietary Restriction Endpoints](#category-cuisine--dietary-restriction-endpoints)
     - [`GET /api/categories/`](#get-apicategories)
     - [`POST /api/categories/`](#post-apicategories)
     - [`DELETE /api/categories/<category_id>`](#delete-apicategoriescategory_id)
     - [`GET /api/cuisines/`](#get-apicuisines)
     - [`POST /api/cuisines/`](#post-apicuisines)
     - [`DELETE /api/cuisines/<cuisine_id>`](#delete-apicuisinescuisine_id)
+    - [`GET /api/diet-restrictions/`](#get-apidiet-restrictions)
+    - [`POST /api/diet-restrictions/`](#post-apidiet-restrictions)
+    - [`DELETE /api/diet-restrictions/<restriction_id>`](#delete-apidiet-restrictionsrestriction_id)
 
 
 ## Authentication
@@ -138,7 +142,16 @@ These routes handle the core application data, such as foods, categories, and cu
 - **URL Parameters:**
     - `showhidden`: (boolean) If `true`, admins can view all private items, not just their own.
 
-## Category & Cuisine Endpoints
+### `GET /api/foods/diet-restriction/<restriction_id>/<limit>/<offset>/<showhidden>`
+
+- **Method:** `GET`
+- **Description:** Retrieves a paginated list of foods by dietary restriction.
+- **Access:** Public (with limitations)
+- **Authentication:** Optional. Same rules as getting food by category.
+- **URL Parameters:**
+    - `showhidden`: (boolean) If `true`, admins can view all private items, not just their own.
+
+## Category, Cuisine, & Dietary Restriction Endpoints
 
 ### `GET /api/categories/`
 
@@ -179,5 +192,26 @@ These routes handle the core application data, such as foods, categories, and cu
 
 - **Method:** `DELETE`
 - **Description:** Deletes a cuisine. Fails if any food items still reference it.
+- **Access:** Admin Only
+- **Authentication:** Session token with `admin` role required.
+
+### `GET /api/diet-restrictions/`
+
+- **Method:** `GET`
+- **Description:** Retrieves a list of all dietary restrictions.
+- **Access:** Public
+- **Authentication:** None
+
+### `POST /api/diet-restrictions/`
+
+- **Method:** `POST`
+- **Description:** Creates a new dietary restriction.
+- **Access:** Admin Only
+- **Authentication:** Session token with `admin` role required.
+
+### `DELETE /api/diet-restrictions/<restriction_id>`
+
+- **Method:** `DELETE`
+- **Description:** Deletes a dietary restriction. Fails if any food items still reference it.
 - **Access:** Admin Only
 - **Authentication:** Session token with `admin` role required.
