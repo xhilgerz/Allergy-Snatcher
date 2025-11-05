@@ -143,6 +143,7 @@ class CreateFoodSchema(BaseModel):
     category_id: int
     cuisine_id: Optional[int] = None
     ingredients: List[CreateIngredientSchema] = []
+    dietary_restriction_ids: List[int] = []
 
 class UpdateFoodSchema(BaseModel):
     """
@@ -166,3 +167,4 @@ class UpdateFoodSchema(BaseModel):
     category_id: Optional[int] = None
     cuisine_id: Optional[int] = None
     ingredients: Optional[List[CreateIngredientSchema]] = None
+    dietary_restriction_ids: Optional[List[int]] = None

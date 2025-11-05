@@ -297,6 +297,11 @@ def update_food_by_id(food_id):
                 for ingredient_data in value:
                     new_ingredient = Ingredient(ingredient_name=ingredient_data['ingredient_name'])
                     food.ingredients.append(new_ingredient)
+            elif field == 'dietary_restriction_ids':
+                food.restriction_associations = []
+                for restriction_id in value:
+                    assoc = DietRestrictAssoc(food_id=food.id, restriction_id=restriction_id)
+                    food.restriction_associations.append(assoc)
             else:
                 setattr(food, field, value)
 
@@ -376,6 +381,10 @@ def create_food():
         for ingredient_data in validated_data.ingredients:
             new_ingredient = Ingredient(ingredient_name=ingredient_data.ingredient_name)
             new_food.ingredients.append(new_ingredient)
+
+        for restriction_id in validated_data.dietary_restriction_ids:
+            assoc = DietRestrictAssoc(food_id=new_food.id, restriction_id=restriction_id)
+            new_food.restriction_associations.append(assoc)
 
         db.session.add(new_food)
         db.session.commit()
