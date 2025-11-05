@@ -296,7 +296,7 @@ for food in foods:
         dbscript += "\n"
 
     dbscript += "\n"
-dbscript += "UPDATE foods (publication_status) SET publication_status = 'public' WHERE contributor_id = @system_user_id;\n"
+dbscript += "UPDATE foods SET publication_status = 'public' WHERE user_id = @system_user_id;\n"
 
 if args.output:
     with open(args.output, 'w') as f:
