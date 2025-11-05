@@ -254,6 +254,10 @@ class Food(Base):
         back_populates="food", cascade="all, delete-orphan"
     )
 
+    @property
+    def dietary_restrictions(self):
+        return [assoc.restriction for assoc in self.restriction_associations]
+
     def __repr__(self) -> str:
         return f"<Food(id={self.id!r}, name={self.name!r})>"
 

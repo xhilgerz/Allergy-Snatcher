@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, g
 from sqlalchemy import or_
+from sqlalchemy.orm import joinedload
 from ..models.auth import require_session, require_role, require_force, optional_session
 from ..models.database import Category, Cuisine, db, Food, Ingredient, DietaryRestriction, DietRestrictAssoc
 from ..models.http import (
@@ -62,7 +63,11 @@ def get_foods(showhidden: str|bool, limit: int, offset: int):
     """
     try:
         showhidden = str(showhidden).lower() == 'true'
-        query = Food.query
+        query = Food.query.options(
+            joinedload(Food.category),
+            joinedload(Food.cuisine),
+            joinedload(Food.restriction_associations).joinedload(DietRestrictAssoc.restriction)
+        )
 
         if g.user and g.user.role == 'admin':
             if not showhidden:
@@ -93,7 +98,11 @@ def get_food_by_id(food_id):
         authentication from either contributor or admin.
     """
     try:
-        food = Food.query.get(food_id)
+        food = Food.query.options(
+            joinedload(Food.category),
+            joinedload(Food.cuisine),
+            joinedload(Food.restriction_associations).joinedload(DietRestrictAssoc.restriction)
+        ).get(food_id)
 
         if not food:
             return jsonify({"error": "Food not found"}), 404
@@ -123,7 +132,11 @@ def get_food_by_category(category_id: int, limit: int, offset: int, showhidden: 
     """
     try:
         showhidden = showhidden.lower() == 'true'
-        query = Food.query.filter_by(category_id=category_id)
+        query = Food.query.options(
+            joinedload(Food.category),
+            joinedload(Food.cuisine),
+            joinedload(Food.restriction_associations).joinedload(DietRestrictAssoc.restriction)
+        ).filter_by(category_id=category_id)
 
         if g.user and g.user.role == 'admin':
             if not showhidden:
@@ -167,7 +180,11 @@ def get_food_by_cuisine(cuisine_id: int, limit: int, offset: int, showhidden: st
     """
     try:
         showhidden = showhidden.lower() == 'true'
-        query = Food.query.filter_by(cuisine_id=cuisine_id)
+        query = Food.query.options(
+            joinedload(Food.category),
+            joinedload(Food.cuisine),
+            joinedload(Food.restriction_associations).joinedload(DietRestrictAssoc.restriction)
+        ).filter_by(cuisine_id=cuisine_id)
 
         if g.user and g.user.role == 'admin':
             if not showhidden:
@@ -211,7 +228,11 @@ def get_food_by_diet_restriction(restriction_id: int, limit: int, offset: int, s
     """
     try:
         showhidden = str(showhidden).lower() == 'true'
-        query = Food.query.join(DietRestrictAssoc).filter(DietRestrictAssoc.restriction_id == restriction_id)
+        query = Food.query.options(
+            joinedload(Food.category),
+            joinedload(Food.cuisine),
+            joinedload(Food.restriction_associations).joinedload(DietRestrictAssoc.restriction)
+        ).join(DietRestrictAssoc).filter(DietRestrictAssoc.restriction_id == restriction_id)
 
         if g.user and g.user.role == 'admin':
             if not showhidden:

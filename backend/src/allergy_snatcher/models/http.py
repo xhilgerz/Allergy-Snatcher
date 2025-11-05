@@ -103,8 +103,9 @@ class FoodSchema(BaseModel):
     sat_fats: Optional[float] = None
     serving_amt: Optional[float] = None
     serving_unit: Optional[str] = None
-    category_id: int
-    cuisine_id: Optional[int] = None
+    category: CategorySchema
+    cuisine: Optional[CuisineSchema] = None
+    dietary_restrictions: List[DietaryRestrictionSchema] = []
     model_config = {"from_attributes": True}
 
 class FoodListSchema(BaseModel):
