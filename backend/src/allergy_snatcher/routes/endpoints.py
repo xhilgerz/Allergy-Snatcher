@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify, request, g
 from sqlalchemy import or_
 from ..models.auth import require_session, require_role, require_force, optional_session
-from ..models.database import Category, Cuisine, db, Food, Ingredient
+from ..models.database import Category, Cuisine, db, Food, Ingredient, DietaryRestriction
 from ..models.http import (
     CategorySchema, CuisineSchema, CreateCategorySchema, CreateCuisineSchema, 
-    FoodSchema, CreateFoodSchema, CreateIngredientSchema, UpdateFoodSchema
+    DietaryRestrictionSchema, FoodSchema, CreateFoodSchema, CreateIngredientSchema, UpdateFoodSchema
 )
 
 
@@ -34,6 +34,20 @@ def get_cuisines():
     cuisines = Cuisine.query.all()
     cuisine_schemas = [CuisineSchema.model_validate(c).model_dump() for c in cuisines]
     return jsonify(cuisine_schemas)
+
+@routes.route("/api/diet-restrictions/", methods=['GET'])
+def get_diet_restrictions():
+    '''
+    HTTP GET
+        Returns a list of diet restrictions of food and their ID's from the database.
+        Doesn't require authentication.
+    '''
+    
+    diet_rest = DietaryRestriction.query.all()
+    diet_rest_schemas = [DietaryRestrictionSchema.model_validate(dr).model_dump() for dr in diet_rest]
+    return jsonify(diet_rest_schemas)
+
+
 
 @routes.route("/api/foods/<int:limit>/<int:offset>/<string:showhidden>", methods=['GET'])
 @optional_session

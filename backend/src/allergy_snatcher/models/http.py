@@ -48,6 +48,30 @@ class CreateCuisineSchema(BaseModel):
     """
     cuisine: str
 
+
+# --- Dietary Restriction Schemas ---
+
+class DietaryRestrictionSchema(BaseModel):
+    """
+    Schema for representing a dietary restriction.
+    """
+    id: int
+    restriction: str
+
+    model_config = {"from_attributes": True}
+
+class DietaryRestrictionListSchema(BaseModel):
+    """
+    Schema for a list of dietary restrictions.
+    """
+    restrictions: List[DietaryRestrictionSchema]
+
+class CreateDietaryRestrictionSchema(BaseModel):
+    """
+    Schema for creating a new dietary restriction.
+    """
+    restriction: str
+
 # --- Food Schemas ---
 
 class IngredientSchema(BaseModel):
