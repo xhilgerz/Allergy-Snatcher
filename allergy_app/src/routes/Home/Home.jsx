@@ -1,1 +1,0 @@
-// This page will include the page with each dietary restriction and their perspective food cards
