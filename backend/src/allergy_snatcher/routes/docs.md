@@ -16,6 +16,7 @@ This document outlines the API endpoints for the Allergy Snatcher application, c
     - [`PATCH /api/foods/<food_id>`](#patch-apifoodsfood_id)
     - [`DELETE /api/foods/<food_id>`](#delete-apifoodsfood_id)
     - [`PUT /api/foods/`](#put-apifoods)
+    - [`GET /api/foods/<limit>/<offset>/<showhidden>`](#get-apifoodslimitoffsetshowhidden)
     - [`GET /api/foods/category/<category_id>/<limit>/<offset>/<showhidden>`](#get-apifoodscategorycategory_idlimitoffsetshowhidden)
     - [`GET /api/foods/cuisine/<cuisine_id>/<limit>/<offset>/<showhidden>`](#get-apifoodscuisinecuisine_idlimitoffsetshowhidden)
     - [`GET /api/foods/diet-restriction/<restriction_id>/<limit>/<offset>/<showhidden>`](#get-apifoodsdiet-restrictionrestriction_idlimitoffsetshowhidden)
@@ -123,6 +124,17 @@ These routes handle the core application data, such as foods, categories, and cu
 - **Description:** Creates a new food item. New items are always created with `private` status.
 - **Access:** Authenticated User
 - **Authentication:** Session token required.
+
+### `GET /api/foods/<limit>/<offset>/<showhidden>`
+
+- **Method:** `GET`
+- **Description:** Retrieves a paginated list of all foods.
+- **Access:** Public (with limitations)
+- **Authentication:** Optional. Unauthenticated users see only `public` foods. Authenticated users see `public` and their own foods. Admins can see all foods.
+- **URL Parameters:**
+    - `limit`: (integer) The maximum number of items to return.
+    - `offset`: (integer) The starting offset for pagination.
+    - `showhidden`: (boolean) If `true`, admins can view all private items, not just their own.
 
 ### `GET /api/foods/category/<category_id>/<limit>/<offset>/<showhidden>`
 
