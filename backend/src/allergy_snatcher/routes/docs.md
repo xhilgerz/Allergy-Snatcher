@@ -20,7 +20,7 @@ This document outlines the API endpoints for the Allergy Snatcher application, c
     - [`GET /api/foods/category/<category_id>/<limit>/<offset>/<showhidden>`](#get-apifoodscategorycategory_idlimitoffsetshowhidden)
     - [`GET /api/foods/cuisine/<cuisine_id>/<limit>/<offset>/<showhidden>`](#get-apifoodscuisinecuisine_idlimitoffsetshowhidden)
     - [`GET /api/foods/diet-restriction/<restriction_id>/<limit>/<offset>/<showhidden>`](#get-apifoodsdiet-restrictionrestriction_idlimitoffsetshowhidden)
-  - [Category, Cuisine, & Dietary Restriction Endpoints](#category-cuisine--dietary-restriction-endpoints)
+  - [Category, Cuisine, \& Dietary Restriction Endpoints](#category-cuisine--dietary-restriction-endpoints)
     - [`GET /api/categories/`](#get-apicategories)
     - [`POST /api/categories/`](#post-apicategories)
     - [`DELETE /api/categories/<category_id>`](#delete-apicategoriescategory_id)
