@@ -4,37 +4,33 @@ import Card from "./card";
 import { getFoods } from "../api/api";
 
 
-function FoodList() {
-  const [foods, setFoods] = useState([]);
-  const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:5001";
-
-  useEffect(() => {
-
-    getFoods(10, 0, true).then(setFoods);
-    
-  
-  }, []);
+export default function FoodList({ data }) {
+  // If nothing has loaded yet
+  if (!data || Object.keys(data).length === 0) {
+    return <p>Loading...</p>;
+  }
 
   return (
-    <div>
-      <h2>Foods</h2>
-      <div className="food-grid">
-        {Array.isArray(foods) && foods.length > 0 ? (
-          foods.map((food) => (
-            <Card
-              key={food.id}
-              picture={food.picture}
-              name={food.name}
-              //cuisine={food.cuisine}
-              dietaryRestriction={food.dietaryRestriction}
-            />
-          ))
-        ) : (
-          <p>No foods found.</p>
-        )}
-      </div>
+    <div className="food-list">
+      {/* Loop through each restriction group */}
+      {Object.entries(data).map(([restrictionName, foods]) => (
+        <div key={restrictionName} className="food-group">
+          <h2>{restrictionName}</h2>
+
+          <div className="food-scroll-container">
+            {foods.map((food) => (
+              <Card
+                key={food.id}
+                picture={food.picture}
+                name={food.name}
+                cuisine={food.cuisine?.cuisine}
+                dietaryRestriction={food.dietary_restrictions?.map(r => r.restriction)}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
-
-export default FoodList;
+export { FoodList };

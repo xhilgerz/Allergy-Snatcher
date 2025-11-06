@@ -12,13 +12,38 @@ code {
     monospace;
 }
 
+
+
+
+.food-scroll-container {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 1rem;
+  padding: 1rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Scrollbar styling (optional) */
+.food-scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+.food-scroll-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+.food-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 .Card {
-  background-color: #ffffff;
-  padding: 1%;
-  margin: 10px; /* Spacing between cards */
-  width: 200px; /* Fixed width for consistent layout */
+  background-color: #fff;
+  flex: 0 0 300px;   /* ← KEY LINE: lock width in flexbox */
+  height: 350px;
+  padding: 1rem;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  border-radius: 10px; 
-  height:400px
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }

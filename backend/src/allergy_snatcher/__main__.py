@@ -8,6 +8,8 @@ def create_app() -> Flask:
     """Creates and configures the Flask app."""
     app = Flask(__name__, static_folder='../static', static_url_path='/')
 
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+
 
     db_user = os.environ.get('DB_USER')
     db_password = os.environ.get('DB_PASSWORD')
@@ -75,7 +77,7 @@ def create_app() -> Flask:
     app.register_blueprint(routes)
     app.register_blueprint(auth_bp)
 
-    CORS(app, origins=["http://localhost:3000"])
+    #CORS(app, origins=["http://localhost:3000"])
 
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
