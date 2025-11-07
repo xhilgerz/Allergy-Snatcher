@@ -20,6 +20,7 @@ export default function AddFoodForm() {
     carbs: "",
     cuisine: "",
     restriction: "",
+    approved: false,
   });
 
   // single handler for ALL inputs
