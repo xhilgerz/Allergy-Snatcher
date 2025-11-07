@@ -1,10 +1,11 @@
-from flask import Blueprint, request, url_for, session, redirect, jsonify, g, Flask
+from flask import Blueprint, request, url_for, session, redirect, jsonify, g, Flask, current_app
 from authlib.integrations.flask_client import OAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..models.database import db, User, Password, OAuthAccount, UserSession
 from ..models.auth import require_session
 import secrets
 import datetime
+import os
 
 oauth = OAuth()
 auth_bp = Blueprint('auth', __name__)
@@ -201,35 +202,101 @@ def oauth_login(provider):
 @auth_bp.route('/oauth/<provider>/callback')
 def oauth_callback(provider):
     client = oauth.create_client(provider)
+
+    
     token = client.authorize_access_token()
     userinfo = client.userinfo()
 
     oauth_account = OAuthAccount.query.filter_by(provider=provider, provider_user_id=userinfo.get('sub')).first()
 
     if oauth_account:
-        session['user_id'] = oauth_account.user_id
-        return redirect('/')
-
-    user = User.query.filter_by(email=userinfo.get('email')).first()
-
-    if not user:
-        user = User(
-            email=userinfo.get('email'),
-            username=userinfo.get('email'), # Or generate a unique username
+        user = oauth_account.user
+    else:
+        user = User.query.filter_by(email=userinfo.get('email')).first()
+        if not user:
+            user = User(
+                email=userinfo.get('email'),
+                username=userinfo.get('email'), # Or generate a unique username
+            )
+            db.session.add(user)
+        
+        new_oauth_account = OAuthAccount(
+            provider=provider,
+            provider_user_id=userinfo.get('sub'),
+            access_token=token.get('access_token'),
+            user=user
         )
-        db.session.add(user)
+        db.session.add(new_oauth_account)
+        db.session.commit()
 
-    new_oauth_account = OAuthAccount(
-        provider=provider,
-        provider_user_id=userinfo.get('sub'),
-        access_token=token.get('access_token'),
-        user=user
+    # Create a new session
+    session_token = secrets.token_hex(32)
+    refresh_token = secrets.token_hex(32)
+    
+    # Define expiry times
+    session_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
+    refresh_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30)
+
+    new_session = UserSession(
+        user_id=user.id,
+        session_token=session_token,
+        expires_at=session_expiry,
+        refresh_token=refresh_token,
+        refresh_token_expires_at=refresh_expiry
     )
-    db.session.add(new_oauth_account)
+    db.session.add(new_session)
     db.session.commit()
 
-    session['user_id'] = user.id
-    return redirect('/')
+    # Redirect to the frontend with the session token
+    frontend_url = f"{current_app.config['FRONTEND_URL']}/auth/callback?session_token={session_token}&expires_at={session_expiry.isoformat()}"
+    
+    # Also set the refresh token as a cookie
+    response = redirect(frontend_url)
+    response.set_cookie(
+        'refresh_token', 
+        refresh_token, 
+        httponly=True, 
+        secure=True, # Set to False if not using HTTPS in development
+        samesite='Lax',
+        expires=refresh_expiry
+    )
+    
+    return response
+
+@auth_bp.route('/oauth/logout', methods=['POST'])
+def oauth_logout():
+    """Handles back-channel logout notifications from the OAuth provider."""
+    logout_token = request.form.get('logout_token')
+    if not logout_token:
+        return 'No logout token', 400
+
+    # Find the right provider by iterating through the registered clients
+    for provider_name in oauth._clients:
+        client = oauth.create_client(provider_name)
+        try:
+            # The logout token is a JWT, we can parse it like an id_token
+            # We pass nonce=None because logout tokens don't have a nonce
+            claims = client.parse_id_token(logout_token, nonce=None)
+            
+            user_sub = claims.get('sub')
+            if user_sub:
+                oauth_account = OAuthAccount.query.filter_by(
+                    provider=provider_name, 
+                    provider_user_id=user_sub
+                ).first()
+
+                if oauth_account:
+                    # Delete all sessions for this user
+                    UserSession.query.filter_by(user_id=oauth_account.user_id).delete()
+                    db.session.commit()
+                    # Break the loop once the user is found and logged out
+                    break
+        except Exception as e:
+            # This provider is not the issuer of the token, continue to the next one
+            print(f"Could not validate logout token with {provider_name}: {e}")
+            continue
+
+    return 'Logout notification processed', 200
 
 def init_app(app: Flask):
     oauth.init_app(app)

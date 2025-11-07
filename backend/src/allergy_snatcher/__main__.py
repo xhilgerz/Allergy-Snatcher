@@ -25,6 +25,12 @@ def create_app() -> Flask:
     if not app.config['SECRET_KEY']:
         raise ValueError('SECRET_KEY is not set')
 
+    if os.environ.get('FLASK_ENV') == 'development':
+        app.config.update(
+            SESSION_COOKIE_SAMESITE='None',
+            SESSION_COOKIE_SECURE=True
+        )
+
 
     oauth_providers = {}
 
@@ -75,7 +81,13 @@ def create_app() -> Flask:
     app.register_blueprint(routes)
     app.register_blueprint(auth_bp)
 
-    CORS(app, origins=["http://localhost:3000"])
+    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+    app.config['FRONTEND_URL'] = frontend_url
+
+    if os.environ.get('FLASK_ENV') == 'development':
+        CORS(app, supports_credentials=True)
+    else:
+        CORS(app, origins=[frontend_url], supports_credentials=True)
 
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
