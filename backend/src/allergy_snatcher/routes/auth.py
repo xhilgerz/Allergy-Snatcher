@@ -1,4 +1,4 @@
-from flask import Blueprint, request, url_for, session, redirect, jsonify, g
+from flask import Blueprint, request, url_for, session, redirect, jsonify, g, Flask
 from authlib.integrations.flask_client import OAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..models.database import db, User, Password, OAuthAccount, UserSession
@@ -202,7 +202,7 @@ def oauth_login(provider):
 def oauth_callback(provider):
     client = oauth.create_client(provider)
     token = client.authorize_access_token()
-    userinfo = client.get('userinfo').json()
+    userinfo = client.userinfo()
 
     oauth_account = OAuthAccount.query.filter_by(provider=provider, provider_user_id=userinfo.get('sub')).first()
 
@@ -231,7 +231,7 @@ def oauth_callback(provider):
     session['user_id'] = user.id
     return redirect('/')
 
-def init_app(app):
+def init_app(app: Flask):
     oauth.init_app(app)
     for provider, config in app.config.get('OAUTH_PROVIDERS', {}).items():
         oauth.register(
