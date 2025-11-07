@@ -17,3 +17,26 @@ export async function getFoods() {
   }
 
 }
+
+
+export async function addFood(foodData) {
+  try {
+    const response = await fetch(`${API_BASE}/api/foods`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(foodData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to add food");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error adding food:", error);
+    throw error;
+  }
+}

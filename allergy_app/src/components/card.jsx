@@ -1,16 +1,39 @@
 import React from "react";
 
-const Card = (props) => {
+const Card = ({ food, showApproveButton = false, onApprove }) => {
 
-    return (
-      <div className={'Card'}>
-        <img className="Card-img" src= {props.picture}/>
-        <h4>{props.name}</h4>
-        <h5>{props.cuisine}</h5>
-        <h5>{props.dietaryRestriction}</h5>
-        
-      </div>
-    )
+
+    
+  const handleApprove = (e) => {
+    e.stopPropagation();
+    //onApprove?.(food.id);
+    console.log("Approved food with ID:", food.id);
+  };
+
+  const handleReject = (e) => {
+    e.stopPropagation();
+    console.log("Rejected food with ID:", food.id);
+    
   }
+
+  return (
+    <div className="Card">
+      <h4>{food.name}</h4>
+      <h5>{food.cuisine?.cuisine}</h5>
+      <h6>{food.dietaryRestriction?.join(", ")}</h6>
+
+      {showApproveButton && (
+        <div className="button-group">
+          <button onClick={handleApprove} className="approve-btn">
+            Approve
+          </button>
+          <button onClick={handleReject} className="reject-btn">
+            Reject
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
   
   export default Card

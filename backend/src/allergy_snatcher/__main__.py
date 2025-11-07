@@ -8,6 +8,8 @@ def create_app() -> Flask:
     """Creates and configures the Flask app."""
     app = Flask(__name__, static_folder='../static', static_url_path='/')
 
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+
 
     db_user = os.environ.get('DB_USER')
     db_password = os.environ.get('DB_PASSWORD')

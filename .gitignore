@@ -27,3 +27,7 @@ yarn-error.log*
 *.pyc
 
 output.sql
+
+# front end
+/allergy_app/.env
+be.env
