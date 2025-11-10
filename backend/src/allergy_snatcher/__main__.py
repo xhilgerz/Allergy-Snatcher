@@ -34,10 +34,13 @@ def create_app() -> Flask:
         )
 
 
+    # OAuth configuration
+    oauth_provider_names = os.environ.get('OAUTH_PROVIDERS', '').lower().split(',')
     oauth_providers = {}
 
     # Google
-    if 'OAUTH_GOOGLE_CLIENT_ID' in os.environ:
+    if 'google' in oauth_provider_names:
+        oauth_provider_names.remove('google')
         oauth_providers['google'] = {
             'client_id': os.environ.get('OAUTH_GOOGLE_CLIENT_ID'),
             'client_secret': os.environ.get('OAUTH_GOOGLE_CLIENT_SECRET'),
@@ -48,7 +51,8 @@ def create_app() -> Flask:
         }
 
     # GitHub
-    if 'OAUTH_GITHUB_CLIENT_ID' in os.environ:
+    if 'github' in oauth_provider_names:
+        oauth_provider_names.remove('github')
         oauth_providers['github'] = {
             'client_id': os.environ.get('OAUTH_GITHUB_CLIENT_ID'),
             'client_secret': os.environ.get('OAUTH_GITHUB_CLIENT_SECRET'),
@@ -63,14 +67,19 @@ def create_app() -> Flask:
 
 
     # Authentik
-    if 'OAUTH_AUTHENTIK_CLIENT_ID' in os.environ:
-        oauth_providers['authentik'] = {
-            'client_id': os.environ.get('OAUTH_AUTHENTIK_CLIENT_ID'),
-            'client_secret': os.environ.get('OAUTH_AUTHENTIK_CLIENT_SECRET'),
-            'server_metadata_url': os.environ.get('OAUTH_AUTHENTIK_SERVER_METADATA_URL'),
+    for provider in oauth_provider_names:
+        oauth_providers[provider] = {
+            'client_id': os.environ.get(f'OAUTH_{provider.upper()}_CLIENT_ID'),
+            'client_secret': os.environ.get(f'OAUTH_{provider.upper()}_CLIENT_SECRET'),
+            'server_metadata_url': os.environ.get(f'OAUTH_{provider.upper()}_SERVER_METADATA_URL', None),
             'client_kwargs': {
-                'scope': 'openid email profile'
-            }
+                'scope': os.environ.get(f'OAUTH_{provider.upper()}_SCOPE', 'openid email profile')
+            },
+            'authorize_url': os.environ.get(f'OAUTH_{provider.upper()}_AUTHORIZE_URL', None),
+            'access_token_url': os.environ.get(f'OAUTH_{provider.upper()}_ACCESS_TOKEN_URL', None),
+            'userinfo_endpoint': os.environ.get(f'OAUTH_{provider.upper()}_USERINFO_ENDPOINT', None),
+            'username_claim': os.environ.get(f'OAUTH_{provider.upper()}_USERNAME_CLAIM', 'preferred_username'),
+            'email_claim': os.environ.get(f'OAUTH_{provider.upper()}_EMAIL_CLAIM', 'email')
         }
 
     app.config['OAUTH_PROVIDERS'] = oauth_providers

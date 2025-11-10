@@ -10,7 +10,7 @@ import os
 oauth = OAuth()
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/register', methods=['POST'])
+@auth_bp.route('/auth/register', methods=['POST'])
 def register():
     data = request.get_json()
     username = data.get('username')
@@ -32,7 +32,7 @@ def register():
 
     return jsonify({'message': 'User registered successfully'}), 201
 
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.route('/auth/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -133,7 +133,7 @@ def refresh():
     
     return response
 
-@auth_bp.route('/status', methods=['GET'])
+@auth_bp.route('/auth/status', methods=['GET'])
 def status():
     """
     Checks if a user is logged in by verifying their session token.
@@ -198,6 +198,23 @@ def logout():
 def oauth_login(provider):
     redirect_uri = url_for('auth.oauth_callback', provider=provider, _external=True)
     return oauth.create_client(provider).authorize_redirect(redirect_uri)
+
+@auth_bp.route('/auth/auth_methods')
+def get_auth_methods():
+    oauth_methods = {}
+    for provider, config in current_app.config.get('OAUTH_PROVIDERS', {}).items():
+        oauth_methods[provider] = {
+            'name': provider,
+            'url': f"/oauth/{provider}"
+        }
+    
+    auth_methods = {
+        "login_form": True,
+        "oauth": oauth_methods
+    }
+
+    return jsonify(auth_methods), 400
+
 
 @auth_bp.route('/oauth/<provider>/callback')
 def oauth_callback(provider):
