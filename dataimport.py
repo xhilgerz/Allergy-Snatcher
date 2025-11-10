@@ -190,7 +190,7 @@ if not os.path.isdir(inputDir) or not os.path.exists(inputDir):
 file_list = []
 for root, dirs, files in os.walk(inputDir):
     for file in files:
-        if file.endswith(".yaml") or file.endswith(".yml"):
+        if file.endswith(".yaml") or file.endswith(".yml") or file.endswith(".json"):
             file_list.append(os.path.join(root, file))
 
 foods : list[Food] = []
@@ -198,7 +198,10 @@ foods : list[Food] = []
 for file in file_list:
     try:
         with open(file, 'r') as f:
-            food = parse_yaml_file_as(Food, f)
+            if file.endswith('.json'):
+                food = Food.model_validate_json(f.read())
+            else:
+                food = parse_yaml_file_as(Food, f)
         foods.append(food)
         logger.info(f"Parsed and validated {file}")
         logger.debug(f"Validated {file}: Food({food})")
