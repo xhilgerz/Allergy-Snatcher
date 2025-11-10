@@ -34,6 +34,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - be.env
         
   db:
     image: mysql:8.0
