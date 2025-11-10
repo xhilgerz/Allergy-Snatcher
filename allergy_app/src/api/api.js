@@ -1,10 +1,6 @@
-// src/api/api.js
-
-const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:5001";
-
 export async function getFoods() {
   try {
-    const response = await fetch(`${API_BASE}/api/foods/10/0/True`);
+    const response = await fetch(`/api/foods/10/0/True`);
     if (!response.ok) {
       throw new Error("Failed to fetch foods");
     }
@@ -21,7 +17,7 @@ export async function getFoods() {
 
 export async function addFood(foodData) {
   try {
-    const response = await fetch(`${API_BASE}/api/foods`, {
+    const response = await fetch(`/api/foods`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

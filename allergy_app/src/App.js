@@ -1,10 +1,10 @@
 // src/App.js
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Home from "./routes/HomePage/Home";
-import About from "./routes/HomePage/About";
-import AddFood from "./routes/Food/AddFood"; // optional for example
-import ApproveFood from "./routes/Account/Admin/ApproveFood";
-import RestrictionsPage from "./routes/Food/RestrictionsPage";
+import Home from "./routes/HomePage/Home.jsx";
+import About from "./routes/HomePage/About.jsx";
+import AddFood from "./routes/Food/AddFood.jsx"; // optional for example
+import ApproveFood from "./routes/Account/Admin/ApproveFood.jsx";
+import RestrictionsPage from "./routes/Food/RestrictionsPage.jsx";
 
 function App() {
   return (

@@ -12,9 +12,6 @@ services:
       - ./allergy_app:/app
       - /app/node_modules
 
-    environment:
-      - API_BASE=http://localhost:5001
-
   backend:
     build:
       context: ./backend
