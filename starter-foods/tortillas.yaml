@@ -36,5 +36,5 @@ servings:
   size: 1
   unit: item
 category: ingredient
-cuisine: Mex # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)
+cuisine: Mexican # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)
 dietary_restrictions: []
