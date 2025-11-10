@@ -1,0 +1,31 @@
+name: H-E-B Jalapeño Pimento Cheese Dip
+brand: H-E-B
+ingredients:
+  - Cheddar Cheese
+  - Mayonnaise
+  - Pimentos
+  - Jalapeños
+  - Cream Cheese
+  - Spices
+nutrition:
+  fats:
+    total: 12
+    saturated: 5
+    trans: 0
+  cholesterol: 25
+  sodium: 250
+  carbohydrates: 2
+  dietary_fiber: 0
+  total_sugars: 1
+  added_sugars: 0
+  protein: 4
+servings:
+  size: 2
+  unit: tbsp
+category: dips
+cuisine: american
+dietary_restrictions:
+  - Lactose
+  - Eggs
+  - Gluten
+  - Nuts

@@ -1,0 +1,28 @@
+name: Mi Tienda by H-E-B Refried Pinto Beans
+brand: Mi Tienda by H-E-B
+ingredients:
+  - Pinto Beans
+  - Lard
+  - Salt
+nutrition:
+  fats:
+    total: 4.5
+    saturated: 2
+    trans: 0
+  cholesterol: 10
+  sodium: 460
+  carbohydrates: 20
+  dietary_fiber: 6
+  total_sugars: 0
+  added_sugars: 0
+  protein: 7
+servings:
+  size: 0.5
+  unit: cup
+category: canned goods
+cuisine: tex-mex
+dietary_restrictions:
+  - Gluten
+  - Nuts
+  - Dairy
+  - Pork

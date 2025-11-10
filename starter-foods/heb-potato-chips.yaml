@@ -1,0 +1,28 @@
+name: H-E-B Select Ingredients Classic Potato Chips
+brand: H-E-B
+ingredients:
+  - Potatoes
+  - Vegetable Oil (Sunflower, Corn, and/or Canola Oil)
+  - Salt
+nutrition:
+  fats:
+    total: 10
+    saturated: 1.5
+    trans: 0
+  cholesterol: 0
+  sodium: 170
+  carbohydrates: 15
+  dietary_fiber: 1
+  total_sugars: 0
+  added_sugars: 0
+  protein: 2
+servings:
+  size: 1
+  unit: oz
+category: snacks
+cuisine: american
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy

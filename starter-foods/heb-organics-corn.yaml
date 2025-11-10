@@ -1,0 +1,28 @@
+name: H-E-B Organics Whole Kernel Corn
+brand: H-E-B Organics
+ingredients:
+  - Organic Corn
+  - Water
+  - Sea Salt
+nutrition:
+  fats:
+    total: 1
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 200
+  carbohydrates: 20
+  dietary_fiber: 2
+  total_sugars: 6
+  added_sugars: 0
+  protein: 3
+servings:
+  size: 0.5
+  unit: cup
+category: canned goods
+cuisine: american
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy

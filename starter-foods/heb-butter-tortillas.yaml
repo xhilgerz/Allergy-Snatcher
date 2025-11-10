@@ -1,0 +1,28 @@
+name: H-E-B Butter Tortillas
+brand: H-E-B
+ingredients:
+  - Enriched Bleached Wheat Flour
+  - Water
+  - Shortening (Soybean Oil, Hydrogenated Soybean Oil)
+  - Butter
+  - Salt
+  - Sugar
+  - Baking Soda
+nutrition:
+  fats:
+    total: 4.5
+    saturated: 1.5
+    trans: 0
+  cholesterol: 5
+  sodium: 400
+  carbohydrates: 25
+  dietary_fiber: 1
+  total_sugars: 1
+  added_sugars: 0
+  protein: 4
+servings:
+  size: 1
+  unit: item
+category: bread
+cuisine: tex-mex
+dietary_restrictions: []

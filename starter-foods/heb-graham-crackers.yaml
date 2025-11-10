@@ -1,0 +1,33 @@
+name: H-E-B Honey Graham Crackers
+brand: H-E-B
+ingredients:
+  - Enriched Flour
+  - Graham Flour
+  - Sugar
+  - Canola Oil
+  - Honey
+  - Baking Soda
+  - Salt
+  - Soy Lecithin
+nutrition:
+  fats:
+    total: 3
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 160
+  carbohydrates: 24
+  dietary_fiber: 1
+  total_sugars: 8
+  added_sugars: 8
+  protein: 2
+servings:
+  size: 2
+  unit: item
+category: snacks
+cuisine: american
+dietary_restrictions:
+  - Soy
+  - Gluten
+  - Nuts
+  - Dairy
