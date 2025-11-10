@@ -52,10 +52,15 @@ All logging will print to stderr.""",
 exit_on_error=False, # We handle exit in our custom error method
 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 add_help=True)
-function_ex_group = parser.add_mutually_exclusive_group(required=True)
-function_ex_group.add_argument("-i", "--input-dir", help="directory to scan for food files", action="store")
-function_ex_group.add_argument("-y", "--yaml-schema", help="Output the expected yaml schema to STDOUT as yaml, then exit", action="store_true")
-function_ex_group.add_argument("-S", "--schema", help="Output the expected yaml schema to STDOUT as json, then exit", action="store_true")
+parser.add_argument("-i", "--input-dir", help="Directory to scan for food files, or to source allowed_dietary_restrictions.txt for schema export.", action="store")
+schemagroup = parser.add_argument_group('schema options')
+schemagroup.description = """
+    Export a schema to STDOUT (helpful for an AI to generate or organize data into an expected format).
+    Can be combined with -i to include dietary restrictions from a specific file.
+"""
+schema_ex_group = schemagroup.add_mutually_exclusive_group(required=False)
+schema_ex_group.add_argument("-y", "--yaml-schema", help="Output the expected yaml schema to STDOUT as yaml, then exit", action="store_true")
+schema_ex_group.add_argument("-S", "--schema", help="Output the expected yaml schema to STDOUT as json, then exit", action="store_true")
 parser.add_argument("-o", "--output", default=None, help="output SQL to file instead of importing", action="store")
 parser.add_argument("-I", "--ignore-import-error", action="store_true", help="Ignore and skip over data files that failed to parse")
 debug_group = parser.add_argument_group('Logging Options')
@@ -91,11 +96,19 @@ Exit codes:
 
 args = parser.parse_args()
 
-
-
-
 db_opts = ['-H', '--host', '-P', '--port', '-u', '--user', '-p', '--password', '-d', '--database', '-s', '--ssl']
 db_arg_used = any(arg in sys.argv for arg in db_opts)
+
+# Argument validation
+if not args.input_dir and not (args.yaml_schema or args.schema):
+    parser.error("No action requested. Use -i to import data, or --schema/--yaml-schema to export schema.")
+
+if args.input_dir and not (args.yaml_schema or args.schema or db_arg_used or args.output):
+    # If -i is specified, but no output action (schema, db, or file), assume they want to print SQL to stdout
+    logger.info("No output specified with -i. Defaulting to printing SQL to STDOUT.")
+
+if not args.input_dir and (db_arg_used or args.output):
+    parser.error("-i/--input-dir is required when specifying an output (database or file).")
 
 dbengine = None
 if db_arg_used:
@@ -124,53 +137,75 @@ else:
 
 from pydantic_yaml import parse_yaml_file_as
 
-### START VALIDATION MODELS ###
-class Fats(BaseModel):
-    total: float
-    saturated: float
-    trans: float
+def create_models(input_dir: Optional[str] = None):
+    """
+    Dynamically creates the Pydantic models, loading dietary restrictions
+    from the specified input directory if provided.
+    """
+    DietaryRestrictionEnum = str
+    allowed_restrictions_list = []
 
-class Servings(BaseModel):
-    size: float
-    unit: Literal['g','mg', 'oz','lb', 'tsp', 'tbsp', 'cup', 'item']
+    if input_dir and os.path.isdir(input_dir):
+        restrictions_path = os.path.join(input_dir, 'allowed_dietary_restrictions.txt')
+        if os.path.exists(restrictions_path):
+            try:
+                with open(restrictions_path, 'r') as f:
+                    allowed_restrictions_list = [line.strip() for line in f if line.strip()]
+                if allowed_restrictions_list:
+                    DietaryRestrictionEnum = Literal[tuple(allowed_restrictions_list)]
+                    logger.info(f"Loaded {len(allowed_restrictions_list)} dietary restrictions from {restrictions_path}")
+            except Exception as e:
+                logger.warning(f"Could not read {restrictions_path}: {e}. No restrictions will be validated in schema.")
+        else:
+            logger.warning(f"No 'allowed_dietary_restrictions.txt' found in '{input_dir}'.")
+    elif args.yaml_schema or args.schema:
+        logger.warning("No input directory provided with -i. No dietary restrictions will be added to the schema.")
 
-class Nutrition(BaseModel):
-    fats: Fats
-    cholesterol: float
-    sodium: float
-    carbohydrates: float
-    dietary_fiber: float
-    total_sugars: float
-    added_sugars: float
-    protein: float
 
-class Food(BaseModel):
-    name: str
-    brand: str
-    ingredients: list[str]
-    nutrition: Nutrition
-    servings: Servings
-    category: str
-    cuisine: Optional[str]
-    dietary_restrictions: list[str] = Field(default=[])
-    
-    @field_validator('dietary_restrictions')
-    def check_dietary_restrictions(cls, v: list[str]):
-        allowed_restrictions_list = None
-        if v == '[]':
-            v = []
-        if os.path.exists(f"{inputDir}/allowed_dietary_restrictions.txt"):
-            with open(f"{inputDir}/allowed_dietary_restrictions.txt", 'r') as f:
-                allowed_restrictions_list = f.readlines()
-                allowed_restrictions_list = [x.strip() for x in allowed_restrictions_list]
-        if allowed_restrictions_list is not None and isinstance(v, list):
-            for restriction in v:
-                if restriction not in allowed_restrictions_list:
-                    raise ValueError(f"Dietary restriction '{restriction}' is not allowed.")
-        elif not isinstance(v, list):
-            raise ValueError(f"Dietary restrictions must be a list, but got '{type(v)}'.")
-        return v
-### END VALIDATION MODELS ###
+    class Fats(BaseModel):
+        total: float
+        saturated: float
+        trans: float
+
+    class Servings(BaseModel):
+        size: float
+        unit: Literal['g','mg', 'oz','lb', 'tsp', 'tbsp', 'cup', 'item']
+
+    class Nutrition(BaseModel):
+        fats: Fats
+        cholesterol: float
+        sodium: float
+        carbohydrates: float
+        dietary_fiber: float
+        total_sugars: float
+        added_sugars: float
+        protein: float
+
+    class Food(BaseModel):
+        name: str = Field(description="Name of the food", max_length=255)
+        brand: str = Field(description="Brand of the food", max_length=100)
+        ingredients: list[str] = Field(description="List of ingredients")
+        nutrition: Nutrition = Field(description="Nutrition information (all fields expected in grams, convert prior to entry)")
+        servings: Servings = Field(description="Serving information")
+        category: str = Field(description="Category of the food (normalize at lowercase)", examples=["ingredient","frozen entry","grains","baking","fish","prepared meal"])
+        cuisine: Optional[str] = Field(description="Cuisine of the food (normalize at lowercase)", examples=["american","italian","tex-mex","mexican"])
+        dietary_restrictions: list[DietaryRestrictionEnum] = Field(default=[], description="List of dietary restrictions")
+        
+        @field_validator('dietary_restrictions')
+        def check_dietary_restrictions(cls, v: list[str]):
+            if not allowed_restrictions_list:
+                return v # No validation possible
+            if isinstance(v, list):
+                for restriction in v:
+                    if restriction not in allowed_restrictions_list:
+                        raise ValueError(f"Dietary restriction '{restriction}' is not in the allowed list.")
+            else:
+                raise TypeError('dietary_restrictions must be a list.')
+            return v
+
+    return Food
+
+Food = create_models(args.input_dir)
 
 if args.yaml_schema or args.schema:
     schema = Food.model_json_schema() #Export schema
