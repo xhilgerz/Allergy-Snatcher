@@ -23,6 +23,21 @@ export default function AddFoodForm() {
     approved: false,
   });
 
+  const allowedRestrictions = [
+  "Dairy",
+  "Nuts",
+  "Gluten",
+  "Kosher",
+  "Vegan",
+  "Red meat",
+  "Pork",
+  "Keto",
+  "Shellfish",
+  "Eggs",
+  "Soy",
+  "Lactose",
+];
+
   // single handler for ALL inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -186,11 +201,18 @@ export default function AddFoodForm() {
 
       <label>
         Dietary Restriction:
-        <input
+        <select
           name="restriction"
           value={formData.restriction}
           onChange={handleChange}
-        />
+        >
+          <option value="">-- Select a restriction --</option>
+          {allowedRestrictions.map((r) => (
+            <option key={r} value={r}>
+              {r}
+            </option>
+          ))}
+        </select>
       </label>
 
       <button type="submit">Add Food</button>

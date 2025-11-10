@@ -13,7 +13,8 @@ services:
       - /app/node_modules
 
     environment:
-      - API_BASE=http://localhost:5001
+      - REACT_APP_API_BASE_URL=http://localhost:5001
+
 
   backend:
     build:
@@ -34,8 +35,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - be.env
         
   db:
     image: mysql:8.0

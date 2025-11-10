@@ -8,7 +8,7 @@ def create_app() -> Flask:
     """Creates and configures the Flask app."""
     app = Flask(__name__, static_folder='../static', static_url_path='/')
 
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+    #CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
 
     db_user = os.environ.get('DB_USER')
@@ -107,4 +107,4 @@ app = create_app()
 if __name__ == "__main__":
     # This block is now just for local development (e.g., `python -m src.allergy_snatcher`)
     is_debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
-    app.run(debug=is_debug, host="0.0.0.0", port=5001)
+    app.run(debug=is_debug, host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
