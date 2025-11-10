@@ -19,11 +19,26 @@ export default function FoodList({ data }) {
   navigate(`/restrictions/${restrictionName}`);
 };
 
+const allowedRestrictions = [
+  "Dairy",
+  "Nuts",
+  "Gluten",
+  "Kosher",
+  "Vegan",
+  "Red meat",
+  "Pork",
+  "Keto",
+  "Shellfish",
+  "Eggs",
+  "Soy",
+  "Lactose",
+];
+
 
   return (
     <div className="food-list">
       {/* Loop through each restriction group */}
-      {Object.entries(data).map(([restrictionName, foods]) => (
+      {Object.entries(data).filter(([restrictionName]) => allowedRestrictions.includes(restrictionName)).map(([restrictionName, foods]) => (
         <div key={restrictionName} className="food-group">
           <h2 onClick={() => onNameClick(restrictionName)}>{restrictionName}</h2>
 
