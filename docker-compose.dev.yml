@@ -11,7 +11,12 @@ services:
     volumes:
       - ./allergy_app:/app
       - /app/node_modules
-
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
     environment:
       - REACT_APP_API_BASE_URL=http://localhost:5001
 
@@ -27,6 +32,14 @@ services:
       DB_PORT: 3306
       DB_NAME: mydatabase
       SECRET_KEY: secret
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    env_file:
+      - be.env
     ports:
       - "5001:5000"
     volumes:
@@ -53,7 +66,7 @@ services:
       interval: 1m30s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 60s
       
 
 volumes:
