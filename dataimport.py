@@ -31,7 +31,7 @@ if missing_modules:
     print("Modules installed. Please re-run the script.")
     sys.exit(255)
 
-from pydantic import BaseModel, Field, field_validator, ValidationError
+from pydantic import BaseModel, Field, field_validator, ValidationError, model_validator
 from pymysql import connect
 import yaml
 
@@ -190,7 +190,7 @@ def create_models(input_dir: Optional[str] = None):
         servings: Servings = Field(description="Serving information")
         category: str = Field(description="Category of the food (normalize at lowercase)", examples=["ingredient","frozen entry","grains","baking","fish","prepared meal"])
         cuisine: Optional[str] = Field(description="Cuisine of the food (normalize at lowercase)", examples=["american","italian","tex-mex","mexican"])
-        dietary_restrictions: list[DietaryRestrictionEnum] = Field(default=[], description="List of dietary restrictions")
+        dietary_restrictions: Optional[list[DietaryRestrictionEnum]] = Field(default=[], description="List of dietary restrictions") # pyright: ignore[reportInvalidTypeForm]
         
         @field_validator('dietary_restrictions')
         def check_dietary_restrictions(cls, v: list[str]):
@@ -203,6 +203,38 @@ def create_models(input_dir: Optional[str] = None):
             else:
                 raise TypeError('dietary_restrictions must be a list.')
             return v
+        
+        @model_validator(mode='after')
+        def log_sugar_inconsistencies(self):
+            """
+            Checks for logical inconsistencies in nutrition data after parsing.
+            This validator does NOT raise an error; it only logs a warning
+            to flag data quality issues from the source.
+            """
+            # The model might be incomplete if parsing failed earlier,
+            # so it's good to check if 'nutrition' exists.
+            if not self.nutrition:
+                return self
+
+            try:
+                total = self.nutrition.total_sugars
+                added = self.nutrition.added_sugars
+
+                # Use 'is not None' to handle 0 values correctly
+                if (total is not None and 
+                    added is not None and 
+                    added > total):
+                    
+                    logger.warning(
+                        f"Data quality issue for food '{self.name}' (Brand: {self.brand}): "
+                        f"added_sugars ({added}g) is greater than total_sugars ({total}g)."
+                    )
+            except AttributeError:
+                # Handle cases where nutrition fields might be missing
+                pass 
+            
+            # MUST return 'self' for 'after' validators
+            return self
 
     return Food
 
