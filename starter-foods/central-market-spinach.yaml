@@ -1,0 +1,26 @@
+name: Central Market Organics Baby Spinach
+brand: Central Market
+ingredients:
+  - Organic Baby Spinach
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 75
+  carbohydrates: 3
+  dietary_fiber: 2
+  total_sugars: 0
+  added_sugars: 0
+  protein: 2
+servings:
+  size: 2
+  unit: cup
+category: produce
+cuisine: null
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy

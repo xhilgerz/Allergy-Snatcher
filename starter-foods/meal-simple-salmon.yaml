@@ -1,0 +1,30 @@
+name: Meal Simple by H-E-B Salmon with Asparagus
+brand: Meal Simple by H-E-B
+ingredients:
+  - Salmon
+  - Asparagus
+  - Olive Oil
+  - Salt
+  - Black Pepper
+  - Lemon
+nutrition:
+  fats:
+    total: 20
+    saturated: 4
+    trans: 0
+  cholesterol: 85
+  sodium: 300
+  carbohydrates: 5
+  dietary_fiber: 3
+  total_sugars: 2
+  added_sugars: 0
+  protein: 35
+servings:
+  size: 1
+  unit: item
+category: prepared meal
+cuisine: american
+dietary_restrictions:
+  - Gluten
+  - Nuts
+  - Dairy

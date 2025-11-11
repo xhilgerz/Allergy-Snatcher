@@ -1,0 +1,24 @@
+name: H-E-B Mootopia Milk
+brand: H-E-B
+ingredients:
+  - Milk
+  - Vitamin D3
+nutrition:
+  fats:
+    total: 8
+    saturated: 5
+    trans: 0
+  cholesterol: 35
+  sodium: 125
+  carbohydrates: 12
+  dietary_fiber: 0
+  total_sugars: 12
+  added_sugars: 0
+  protein: 8
+servings:
+  size: 1
+  unit: cup
+category: dairy
+cuisine: american
+dietary_restrictions:
+  - Lactose

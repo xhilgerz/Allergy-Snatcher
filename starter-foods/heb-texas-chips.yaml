@@ -1,0 +1,28 @@
+name: H-E-B Texas-Shaped Tortilla Chips
+brand: H-E-B
+ingredients:
+  - Corn
+  - Vegetable Oil (Corn, Canola, and/or Sunflower Oil)
+  - Salt
+nutrition:
+  fats:
+    total: 7
+    saturated: 1
+    trans: 0
+  cholesterol: 0
+  sodium: 115
+  carbohydrates: 19
+  dietary_fiber: 2
+  total_sugars: 0
+  added_sugars: 0
+  protein: 2
+servings:
+  size: 1
+  unit: oz
+category: snacks
+cuisine: tex-mex
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy
