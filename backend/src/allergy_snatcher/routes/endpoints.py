@@ -131,7 +131,7 @@ def get_food_by_category(category_id: int, limit: int, offset: int, showhidden: 
             Additional parameters include length of results and offsets (so not all results are returned at once enabling paging)
     """
     try:
-        showhidden = showhidden.lower() == 'true'
+        showhidden = str(showhidden).lower() == 'true'
         query = Food.query.options(
             joinedload(Food.category),
             joinedload(Food.cuisine),
@@ -179,7 +179,7 @@ def get_food_by_cuisine(cuisine_id: int, limit: int, offset: int, showhidden: st
             Additional parameters include length of results and offsets (so not all results are returned at once enabling paging)
     """
     try:
-        showhidden = showhidden.lower() == 'true'
+        showhidden = str(showhidden).lower() == 'true'
         query = Food.query.options(
             joinedload(Food.category),
             joinedload(Food.cuisine),
@@ -295,12 +295,12 @@ def update_food_by_id(food_id):
             if field == 'ingredients':
                 food.ingredients = []
                 for ingredient_data in value:
-                    new_ingredient = Ingredient(ingredient_name=ingredient_data['ingredient_name'])
+                    new_ingredient = Ingredient(ingredient_name=ingredient_data['ingredient_name']) # type: ignore
                     food.ingredients.append(new_ingredient)
             elif field == 'dietary_restriction_ids':
                 food.restriction_associations = []
                 for restriction_id in value:
-                    assoc = DietRestrictAssoc(food_id=food.id, restriction_id=restriction_id)
+                    assoc = DietRestrictAssoc(food_id=food.id, restriction_id=restriction_id) # type: ignore
                     food.restriction_associations.append(assoc)
             else:
                 setattr(food, field, value)
@@ -359,31 +359,31 @@ def create_food():
         validated_data = CreateFoodSchema(**data)
         validated_data.publication_status = 'private'
         new_food = Food(
-            name=validated_data.name,
-            brand=validated_data.brand,
-            publication_status=validated_data.publication_status,
-            dietary_fiber=validated_data.dietary_fiber,
-            sugars=validated_data.sugars,
-            protein=validated_data.protein,
-            carbs=validated_data.carbs,
-            cal=validated_data.cal,
-            cholesterol=validated_data.cholesterol,
-            sodium=validated_data.sodium,
-            trans_fats=validated_data.trans_fats,
-            total_fats=validated_data.total_fats,
-            sat_fats=validated_data.sat_fats,
-            serving_amt=validated_data.serving_amt,
-            serving_unit=validated_data.serving_unit,
-            category_id=validated_data.category_id,
-            cuisine_id=validated_data.cuisine_id
+            name=validated_data.name, # type: ignore
+            brand=validated_data.brand, # type: ignore
+            publication_status=validated_data.publication_status, # type: ignore
+            dietary_fiber=validated_data.dietary_fiber, # type: ignore
+            sugars=validated_data.sugars, # type: ignore
+            protein=validated_data.protein, # type: ignore
+            carbs=validated_data.carbs, # type: ignore
+            cal=validated_data.cal, # type: ignore
+            cholesterol=validated_data.cholesterol, # type: ignore
+            sodium=validated_data.sodium, # type: ignore
+            trans_fats=validated_data.trans_fats, # type: ignore
+            total_fats=validated_data.total_fats, # type: ignore
+            sat_fats=validated_data.sat_fats, # type: ignore
+            serving_amt=validated_data.serving_amt, # type: ignore
+            serving_unit=validated_data.serving_unit, # type: ignore
+            category_id=validated_data.category_id, # type: ignore
+            cuisine_id=validated_data.cuisine_id # type: ignore
         )
 
         for ingredient_data in validated_data.ingredients:
-            new_ingredient = Ingredient(ingredient_name=ingredient_data.ingredient_name)
+            new_ingredient = Ingredient(ingredient_name=ingredient_data.ingredient_name) # type: ignore
             new_food.ingredients.append(new_ingredient)
 
         for restriction_id in validated_data.dietary_restriction_ids:
-            assoc = DietRestrictAssoc(food_id=new_food.id, restriction_id=restriction_id)
+            assoc = DietRestrictAssoc(food_id=new_food.id, restriction_id=restriction_id) # type: ignore
             new_food.restriction_associations.append(assoc)
 
         db.session.add(new_food)
@@ -404,7 +404,7 @@ def create_category():
         data = request.get_json()
         validated_data = CreateCategorySchema(**data)
         
-        new_category = Category(category=validated_data.category)
+        new_category = Category(category=validated_data.category) # type: ignore
         db.session.add(new_category)
         db.session.commit()
         
@@ -423,7 +423,7 @@ def create_cuisine():
         data = request.get_json()
         validated_data = CreateCuisineSchema(**data)
         
-        new_cuisine = Cuisine(cuisine=validated_data.cuisine)
+        new_cuisine = Cuisine(cuisine=validated_data.cuisine) # type: ignore
         db.session.add(new_cuisine)
         db.session.commit()
         
@@ -442,7 +442,7 @@ def create_diet_restriction():
         data = request.get_json()
         validated_data = CreateDietaryRestrictionSchema(**data)
         
-        new_restriction = DietaryRestriction(restriction=validated_data.restriction)
+        new_restriction = DietaryRestriction(restriction=validated_data.restriction) # type: ignore
         db.session.add(new_restriction)
         db.session.commit()
         

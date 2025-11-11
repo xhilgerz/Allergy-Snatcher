@@ -23,8 +23,8 @@ def register():
     if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
         return jsonify({'error': 'Username or email already exists'}), 400
 
-    new_user = User(username=username, email=email)
-    new_password = Password(password_hash=generate_password_hash(password), user=new_user)
+    new_user = User(username=username, email=email) # pyright: ignore[reportCallIssue]
+    new_password = Password(password_hash=generate_password_hash(password), user=new_user) # type: ignore
     
     db.session.add(new_user)
     db.session.add(new_password)
@@ -55,11 +55,11 @@ def login():
     refresh_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30)
 
     new_session = UserSession(
-        user_id=user.id,
-        session_token=session_token,
-        expires_at=session_expiry,
-        refresh_token=refresh_token,
-        refresh_token_expires_at=refresh_expiry
+        user_id=user.id, # type: ignore
+        session_token=session_token, # type: ignore
+        expires_at=session_expiry,# type: ignore
+        refresh_token=refresh_token,# type: ignore
+        refresh_token_expires_at=refresh_expiry# type: ignore
     )
     db.session.add(new_session)
     db.session.commit()
@@ -197,7 +197,7 @@ def logout():
 @auth_bp.route('/oauth/<provider>')
 def oauth_login(provider):
     redirect_uri = url_for('auth.oauth_callback', provider=provider, _external=True)
-    return oauth.create_client(provider).authorize_redirect(redirect_uri)
+    return oauth.create_client(provider).authorize_redirect(redirect_uri) # pyright: ignore[reportOptionalMemberAccess]
 
 @auth_bp.route('/auth/auth_methods')
 def get_auth_methods():
@@ -221,8 +221,8 @@ def oauth_callback(provider):
     client = oauth.create_client(provider)
 
     
-    token = client.authorize_access_token()
-    userinfo = client.userinfo()
+    token = client.authorize_access_token() # pyright: ignore[reportOptionalMemberAccess]
+    userinfo = client.userinfo() # pyright: ignore[reportOptionalMemberAccess]
 
     oauth_account = OAuthAccount.query.filter_by(provider=provider, provider_user_id=userinfo.get('sub')).first()
 
@@ -232,16 +232,16 @@ def oauth_callback(provider):
         user = User.query.filter_by(email=userinfo.get('email')).first()
         if not user:
             user = User(
-                email=userinfo.get('email'),
-                username=userinfo.get('email'), # Or generate a unique username
+                email=userinfo.get('email'),# type: ignore
+                username=userinfo.get('email'), # Or generate a unique username # type: ignore
             )
             db.session.add(user)
         
         new_oauth_account = OAuthAccount(
-            provider=provider,
-            provider_user_id=userinfo.get('sub'),
-            access_token=token.get('access_token'),
-            user=user
+            provider=provider, # type: ignore
+            provider_user_id=userinfo.get('sub'), # type: ignore
+            access_token=token.get('access_token'), # type: ignore
+            user=user # type: ignore
         )
         db.session.add(new_oauth_account)
         db.session.commit()
@@ -255,11 +255,11 @@ def oauth_callback(provider):
     refresh_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30)
 
     new_session = UserSession(
-        user_id=user.id,
-        session_token=session_token,
-        expires_at=session_expiry,
-        refresh_token=refresh_token,
-        refresh_token_expires_at=refresh_expiry
+        user_id=user.id, # type: ignore
+        session_token=session_token, # type: ignore
+        expires_at=session_expiry, # type: ignore
+        refresh_token=refresh_token, # type: ignore
+        refresh_token_expires_at=refresh_expiry # type: ignore
     )
     db.session.add(new_session)
     db.session.commit()
@@ -293,7 +293,7 @@ def oauth_logout():
         try:
             # The logout token is a JWT, we can parse it like an id_token
             # We pass nonce=None because logout tokens don't have a nonce
-            claims = client.parse_id_token(logout_token, nonce=None)
+            claims = client.parse_id_token(logout_token, nonce=None) # pyright: ignore[reportOptionalMemberAccess]
             
             user_sub = claims.get('sub')
             if user_sub:
