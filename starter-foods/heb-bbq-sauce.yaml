@@ -24,6 +24,7 @@ nutrition:
   protein: 0
 servings:
   size: 2
+  calories: 50
   unit: tbsp
 category: condiments
 cuisine: american

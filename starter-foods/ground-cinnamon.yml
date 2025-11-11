@@ -18,6 +18,7 @@ nutrition: #this must be in grams
   protein: 0
 servings:
   size: 0.25
+  calories: 0
   unit: tsp
 category: ingredient
 cuisine: null # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)

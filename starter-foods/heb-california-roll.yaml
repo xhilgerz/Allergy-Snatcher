@@ -9,18 +9,19 @@ ingredients:
   - Sesame Seeds
 nutrition:
   fats:
-    total: 8
-    saturated: 1
+    total: 4
+    saturated: 0.5
     trans: 0
-  cholesterol: 10
-  sodium: 500
-  carbohydrates: 45
-  dietary_fiber: 3
-  total_sugars: 5
+  cholesterol: 4
+  sodium: 744
+  carbohydrates: 40
+  dietary_fiber: 2
+  total_sugars: 6
   added_sugars: 3
-  protein: 8
+  protein: 6
 servings:
   size: 8
+  calories: 190
   unit: item
 category: prepared meal
 cuisine: japanese

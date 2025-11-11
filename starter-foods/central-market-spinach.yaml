@@ -4,18 +4,19 @@ ingredients:
   - Organic Baby Spinach
 nutrition:
   fats:
-    total: 0
+    total: 0.5
     saturated: 0
     trans: 0
   cholesterol: 0
-  sodium: 75
-  carbohydrates: 3
+  sodium: 65
+  carbohydrates: 4
   dietary_fiber: 2
-  total_sugars: 0
+  total_sugars: 1
   added_sugars: 0
-  protein: 2
+  protein: 3
 servings:
-  size: 2
+  size: 1
+  calories: 35
   unit: cup
 category: produce
 cuisine: null

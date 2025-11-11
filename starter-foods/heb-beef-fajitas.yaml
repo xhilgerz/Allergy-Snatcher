@@ -19,6 +19,7 @@ nutrition:
   protein: 22
 servings:
   size: 4
+  calories: 210
   unit: oz
 category: meat
 cuisine: tex-mex

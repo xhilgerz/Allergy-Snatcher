@@ -16,6 +16,7 @@ nutrition:
   protein: 2
 servings:
   size: 1
+  calories: 25
   unit: cup
 category: frozen
 cuisine: null

@@ -13,18 +13,18 @@ nutrition: #this must be in grams
     total: 0
     saturated: 0
     trans: 0
-  cholesterol: 0
-  sodium: 0
-  carbohydrates: 0
+  cholesterol: 0.005
+  sodium: 0.12
+  carbohydrates: 6
   dietary_fiber: 0
   total_sugars: 6
   added_sugars: 0
   protein: 13
 servings:
-  size: 0
-  unit: item
+  size: 1
+  calories: 80
+  unit: cup
 category: ingredient
 cuisine: null # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)
 dietary_restrictions:
   - Lactose
-  - Dairy
