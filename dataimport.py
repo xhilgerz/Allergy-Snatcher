@@ -192,18 +192,6 @@ def create_models(input_dir: Optional[str] = None):
         cuisine: Optional[str] = Field(description="Cuisine of the food (normalize at lowercase)", examples=["american","italian","tex-mex","mexican"])
         dietary_restrictions: Optional[list[DietaryRestrictionEnum]] = Field(default=[], description="List of dietary restrictions") # pyright: ignore[reportInvalidTypeForm]
         
-        @field_validator('dietary_restrictions')
-        def check_dietary_restrictions(cls, v: list[str]):
-            if not allowed_restrictions_list:
-                return v # No validation possible
-            if isinstance(v, list):
-                for restriction in v:
-                    if restriction not in allowed_restrictions_list:
-                        raise ValueError(f"Dietary restriction '{restriction}' is not in the allowed list.")
-            else:
-                raise TypeError('dietary_restrictions must be a list.')
-            return v
-        
         @model_validator(mode='after')
         def log_sugar_inconsistencies(self):
             """
