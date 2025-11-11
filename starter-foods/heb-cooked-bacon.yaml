@@ -23,6 +23,7 @@ nutrition:
 servings:
   size: 2
   unit: item
+  calories: 60
 category: meat
 cuisine: american
 dietary_restrictions:

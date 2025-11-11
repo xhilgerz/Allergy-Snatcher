@@ -24,6 +24,7 @@ nutrition:
 servings:
   size: 2
   unit: item
+  calories: 130
 category: snacks
 cuisine: american
 dietary_restrictions:

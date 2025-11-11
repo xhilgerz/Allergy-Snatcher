@@ -22,6 +22,7 @@ nutrition:
 servings:
   size: 0.25
   unit: cup
+  calories: 110
 category: dairy
 cuisine: american
 dietary_restrictions:

@@ -19,6 +19,7 @@ nutrition:
 servings:
   size: 1
   unit: oz
+  calories: 150
 category: snacks
 cuisine: tex-mex
 dietary_restrictions:

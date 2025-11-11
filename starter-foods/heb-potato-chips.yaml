@@ -19,6 +19,7 @@ nutrition:
 servings:
   size: 1
   unit: oz
+  calories: 160
 category: snacks
 cuisine: american
 dietary_restrictions:

@@ -22,6 +22,7 @@ nutrition:
 servings:
   size: 2
   unit: tbsp
+  calories: 130
 category: dips
 cuisine: american
 dietary_restrictions:

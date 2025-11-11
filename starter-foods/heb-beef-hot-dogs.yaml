@@ -23,6 +23,7 @@ nutrition:
 servings:
   size: 1
   unit: item
+  calories: 130
 category: meat
 cuisine: american
 dietary_restrictions:

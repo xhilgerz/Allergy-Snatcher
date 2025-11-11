@@ -22,6 +22,7 @@ nutrition:
 servings:
   size: 1.33
   unit: tbsp
+  calories: 30
 category: Spice mixes
 cuisine: Tex-Mex
 dietary_restrictions:

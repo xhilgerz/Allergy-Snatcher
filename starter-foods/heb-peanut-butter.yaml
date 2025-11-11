@@ -18,6 +18,7 @@ nutrition:
 servings:
   size: 2
   unit: tbsp
+  calories: 190
 category: pantry
 cuisine: american
 dietary_restrictions:

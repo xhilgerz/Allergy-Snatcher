@@ -17,6 +17,7 @@ nutrition:
 servings:
   size: 4
   unit: oz
+  calories: 80
 category: fish
 cuisine: null
 dietary_restrictions:

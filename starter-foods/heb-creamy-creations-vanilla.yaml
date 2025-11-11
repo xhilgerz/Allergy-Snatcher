@@ -26,6 +26,7 @@ nutrition:
 servings:
   size: 0.67
   unit: cup
+  calories: 230
 category: frozen dessert
 cuisine: american
 dietary_restrictions:

@@ -17,6 +17,7 @@ nutrition:
 servings:
   size: 1
   unit: item
+  calories: 60
 category: produce
 cuisine: null
 dietary_restrictions:

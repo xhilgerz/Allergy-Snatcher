@@ -23,6 +23,7 @@ nutrition:
 servings:
   size: 1
   unit: item
+  calories: 110
 category: bread
 cuisine: tex-mex
 dietary_restrictions: []

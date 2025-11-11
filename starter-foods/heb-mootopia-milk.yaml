@@ -18,6 +18,7 @@ nutrition:
 servings:
   size: 1
   unit: cup
+  calories: 150
 category: dairy
 cuisine: american
 dietary_restrictions:

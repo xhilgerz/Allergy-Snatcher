@@ -24,6 +24,7 @@ nutrition:
 servings:
   size: 2
   unit: oz
+  calories: 180
 category: bread
 cuisine: american
 dietary_restrictions:

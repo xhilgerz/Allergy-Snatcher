@@ -17,6 +17,7 @@ nutrition:
 servings:
   size: 8
   unit: oz
+  calories: 110
 category: beverages
 cuisine: american
 dietary_restrictions:

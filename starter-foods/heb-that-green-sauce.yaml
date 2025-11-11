@@ -23,6 +23,7 @@ nutrition:
 servings:
   size: 2
   unit: tbsp
+  calories: 40
 category: condiments
 cuisine: tex-mex
 dietary_restrictions:

@@ -19,6 +19,7 @@ nutrition:
 servings:
   size: 0.5
   unit: cup
+  calories: 70
 category: canned goods
 cuisine: american
 dietary_restrictions:

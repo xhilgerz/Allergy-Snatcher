@@ -22,6 +22,7 @@ nutrition:
 servings:
   size: 1
   unit: tbsp
+  calories: 50
 category: pantry
 cuisine: american
 dietary_restrictions:

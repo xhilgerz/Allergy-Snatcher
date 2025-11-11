@@ -22,6 +22,7 @@ nutrition:
 servings:
   size: 1
   unit: item
+  calories: 400
 category: prepared meal
 cuisine: american
 dietary_restrictions:

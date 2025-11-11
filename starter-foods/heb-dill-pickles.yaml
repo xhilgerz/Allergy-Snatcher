@@ -23,6 +23,7 @@ nutrition:
 servings:
   size: 1
   unit: oz
+  calories: 5
 category: pantry
 cuisine: american
 dietary_restrictions:

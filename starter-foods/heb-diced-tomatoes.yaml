@@ -21,6 +21,7 @@ nutrition:
 servings:
   size: 0.5
   unit: cup
+  calories: 25
 category: canned goods
 cuisine: null
 dietary_restrictions:

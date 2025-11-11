@@ -35,6 +35,7 @@ nutrition: #this must be in grams
 servings:
   size: 1
   unit: item
+  calories: 25
 category: ingredient
 cuisine: Mexican # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)
 dietary_restrictions: []

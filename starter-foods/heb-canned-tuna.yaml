@@ -19,6 +19,7 @@ nutrition:
 servings:
   size: 2
   unit: oz
+  calories: 50
 category: canned goods
 cuisine: american
 dietary_restrictions:
