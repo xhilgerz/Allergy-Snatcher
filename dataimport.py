@@ -168,7 +168,8 @@ def create_models(input_dir: Optional[str] = None):
         trans: float
 
     class Servings(BaseModel):
-        size: float
+        size: float = Field(description="Serving size in per the unit field")
+        calories : float = Field(description="Calories per serving")
         unit: Literal['g','mg', 'oz','lb', 'tsp', 'tbsp', 'cup', 'item']
 
     class Nutrition(BaseModel):
@@ -290,13 +291,14 @@ for food in foods:
     servings = food.servings
 
     food_insert_sql = f"""INSERT INTO foods (
-    name, brand, publication_status, dietary_fiber, sugars, protein, carbs,
+    name, brand, publication_status, cal, dietary_fiber, sugars, protein, carbs,
     cholesterol, sodium, trans_fats, total_fats, sat_fats, serving_amt, serving_unit,
     user_id, category_id, cuisine_id
 ) VALUES (
     {sql_str(food.name)},
     {sql_str(food.brand)},
     'public',
+    {servings.calories},
     {nutrition.dietary_fiber},
     {nutrition.total_sugars},
     {nutrition.protein},
