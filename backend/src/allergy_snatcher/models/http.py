@@ -127,7 +127,7 @@ class CreateFoodSchema(BaseModel):
     """
     name: str
     brand: Optional[str] = None
-    publication_status: Literal["public", "private", "unlisting"] = "private"
+    publication_status: Optional[Literal["private"]] = "private"
     dietary_fiber: Optional[float] = None
     sugars: Optional[float] = None
     protein: Optional[float] = None
