@@ -249,7 +249,7 @@ for root, dirs, files in os.walk(inputDir):
         if file.endswith(".yaml") or file.endswith(".yml") or file.endswith(".json"):
             file_list.append(os.path.join(root, file))
 
-foods : list[Food] = []
+foods : list[Food] = [] # pyright: ignore[reportInvalidTypeForm]
 # Parse yml files
 for file in file_list:
     try:
