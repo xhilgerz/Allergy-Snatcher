@@ -108,10 +108,9 @@ CREATE TABLE foods (
 );
 
 CREATE TABLE ingredients (
-    id INT NOT NULL AUTO_INCREMENT,
     food_id INT NOT NULL,
     ingredient_name VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id),
+    PRIMARY KEY (food_id, ingredient_name),
     FOREIGN KEY(food_id) REFERENCES foods (id)
 );
 
