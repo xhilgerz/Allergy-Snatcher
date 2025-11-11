@@ -1,0 +1,28 @@
+name: Texas Chili Seasoning Mix
+brand: H-E-B
+ingredients:
+- CHILI PEPPER AND OTHER SPICES
+- ENRICHED FLOUR (WHEAT FLOUR, NIACIN, IRON, THIAMIN MONONITRATE, RIBOFLAVIN, FOLIC
+  ACID)
+- SALT
+- ONION
+- GARLIC
+nutrition:
+  fats:
+    total: 1
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 410
+  carbohydrates: 5
+  dietary_fiber: 2
+  total_sugars: 0
+  added_sugars: 0
+  protein: 1
+servings:
+  size: 1.33
+  unit: tbsp
+category: Spice mixes
+cuisine: Tex-Mex
+dietary_restrictions:
+- Gluten 
