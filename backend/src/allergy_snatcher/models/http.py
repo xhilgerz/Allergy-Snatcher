@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Literal
+from .database import DietaryRestriction, Category, Cuisine
 
 # --- Category Schemas ---
 
@@ -143,7 +144,28 @@ class CreateFoodSchema(BaseModel):
     category_id: int
     cuisine_id: Optional[int] = None
     ingredients: List[CreateIngredientSchema] = []
-    dietary_restriction_ids: List[int] = []
+    dietary_restriction_ids: List[int|str] = [] # accepts name of dietary restriction or restriction id
+
+    @field_validator('dietary_restriction_ids', mode='before')
+    @classmethod
+    def validate_dietary_restriction_ids(cls, v):
+        diets = DietaryRestriction.query.all()
+        if v is None:
+            return v
+        if v == [] or v == '[]':
+            return v
+        for sel in v:
+            if isinstance(sel, str):
+                if not DietaryRestriction.query.filter_by(restriction=sel).first():
+                    raise ValueError(f"Invalid dietary restriction: {sel}")
+            elif isinstance(sel, int):
+                if not DietaryRestriction.query.get(sel):
+                    raise ValueError(f"Invalid dietary restriction ID: {sel}")
+            else:
+                raise ValueError(f"Invalid dietary restriction ID: {sel}")
+            
+        return v
+    
 
 class UpdateFoodSchema(BaseModel):
     """
@@ -167,4 +189,24 @@ class UpdateFoodSchema(BaseModel):
     category_id: Optional[int] = None
     cuisine_id: Optional[int] = None
     ingredients: Optional[List[CreateIngredientSchema]] = None
-    dietary_restriction_ids: Optional[List[int]] = None
+    dietary_restriction_ids: Optional[List[int|str]] = None
+
+    @field_validator('dietary_restriction_ids', mode='before')
+    @classmethod
+    def validate_dietary_restriction_ids(cls, v):
+        diets = DietaryRestriction.query.all()
+        if v is None:
+            return v
+        if v == [] or v == '[]':
+            return v
+        for sel in v:
+            if isinstance(sel, str):
+                if not DietaryRestriction.query.filter_by(restriction=sel).first():
+                    raise ValueError(f"Invalid dietary restriction: {sel}")
+            elif isinstance(sel, int):
+                if not DietaryRestriction.query.get(sel):
+                    raise ValueError(f"Invalid dietary restriction ID: {sel}")
+            else:
+                raise ValueError(f"Invalid dietary restriction ID: {sel}")
+            
+        return v
