@@ -32,29 +32,41 @@ const allowedRestrictions = [
   "Eggs",
   "Soy",
   "Lactose",
+  "Gluten-Free",
 ];
 
 
   return (
     <div className="food-list">
       {/* Loop through each restriction group */}
-      {Object.entries(data).filter(([restrictionName]) => allowedRestrictions.includes(restrictionName)).map(([restrictionName, foods]) => (
-        <div key={restrictionName} className="food-group">
-          <h2 onClick={() => onNameClick(restrictionName)}>{restrictionName}</h2>
+      {Object.entries(data)
+  .filter(([restrictionName]) => allowedRestrictions.includes(restrictionName))
+  .map(([restrictionName, foods]) => {
+    const visibleFoods = foods.filter(
+      (food) => food.publication_status === "public"
+    );
 
-          <div className="food-scroll-container">
-            {foods.map((food) => (
-              <Card
-                key={food.id}
-                food={{
-                  ...food,
-                  dietaryRestriction: food.dietary_restrictions?.map(r => r.restriction),
-                }}
-              />
-            ))}
-          </div>
+    // Skip empty groups (if all foods are private)
+    if (visibleFoods.length === 0) return null;
+
+    return (
+      <div key={restrictionName} className="food-group">
+        <h2 onClick={() => onNameClick(restrictionName)}>{restrictionName}</h2>
+        <div className="food-scroll-container">
+          {visibleFoods.map((food) => (
+            <Card
+              key={food.id}
+              food={{
+                ...food,
+                dietaryRestriction: food.dietary_restrictions?.map((r) => r.restriction),
+              }}
+            />
+          ))}
         </div>
-      ))}
+      </div>
+    );
+  })}
+
     </div>
   );
 }
