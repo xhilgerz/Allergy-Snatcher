@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Select from "react-select";
+import { addFood } from "../api/api.js";
 
 export default function AddFoodForm() {
   const [formData, setFormData] = useState({
@@ -19,39 +21,83 @@ export default function AddFoodForm() {
     protein: "",
     carbs: "",
     cuisine: "",
-    restriction: "",
-    approved: false,
+    restrictions: [],
+    publication_status: "private", // ✅ backend expects "private" not false
   });
 
   const allowedRestrictions = [
-  "Dairy",
-  "Nuts",
-  "Gluten",
-  "Kosher",
-  "Vegan",
-  "Red meat",
-  "Pork",
-  "Keto",
-  "Shellfish",
-  "Eggs",
-  "Soy",
-  "Lactose",
-];
+    "Dairy", "Nuts", "Gluten", "Kosher", "Vegan", "Red meat",
+    "Pork", "Keto", "Shellfish", "Eggs", "Soy", "Lactose","Gluten-Free",
+  ];
 
-  // single handler for ALL inputs
+  // ✅ handles all input updates
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value, // update the matching key
+      [name]:
+        type === "number"
+          ? value === "" ? "" : parseFloat(value)
+          : value,
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitted food:", formData);
-    //addFood(formData)
+  // ✅ react-select multi handler
+  const handleRestrictionsChange = (selectedOptions) => {
+    const values = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
+    setFormData((prev) => ({ ...prev, restrictions: values }));
   };
+
+  // ✅ builds backend-safe payload
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formattedData = {
+      name: formData.name,
+      brand: formData.brand,
+      publication_status: formData.publication_status,
+      carbs: formData.carbs === "" ? null : parseFloat(formData.carbs),
+      protein: formData.protein === "" ? null : parseFloat(formData.protein),
+      total_fats: formData.total_fats === "" ? null : parseFloat(formData.total_fats),
+      sat_fats: formData.saturated_fats === "" ? null : parseFloat(formData.saturated_fats),
+      trans_fats: formData.trans_fats === "" ? null : parseFloat(formData.trans_fats),
+      cholesterol: formData.cholesterol === "" ? null : parseFloat(formData.cholesterol),
+      sodium: formData.sodium === "" ? null : parseFloat(formData.sodium),
+      dietary_fiber: formData.dietary_fiber === "" ? null : parseFloat(formData.dietary_fiber),
+      sugars: formData.total_sugars === "" ? null : parseFloat(formData.total_sugars),
+      cal: formData.calories === "" ? null : parseFloat(formData.calories),
+
+      // required by backend
+      category_id: 1, // temporary default
+      cuisine_id: 1,
+
+      // convert string → list of ingredient objects
+      ingredients: formData.ingredients
+        ? formData.ingredients
+            .split(",")
+            .map((i) => ({ ingredient_name: i.trim() }))
+        : [],
+
+      // placeholder IDs until you map real restriction IDs
+      dietary_restriction_ids: formData.restrictions.map((_, idx) => idx + 1),
+    };
+
+    console.log("Submitting formatted data:", formattedData);
+
+    try {
+      const res = await addFood(formattedData);
+      console.log("Backend success:", res);
+      alert("Food added successfully!");
+    } catch (err) {
+      console.error("Backend failed:", err);
+      alert("Failed to add food — check console for details.");
+    }
+  };
+
+  const restrictionOptions = allowedRestrictions.map(r => ({
+    value: r,
+    label: r,
+  }));
 
   return (
     <form onSubmit={handleSubmit} className="add-food-form">
@@ -66,7 +112,7 @@ export default function AddFoodForm() {
       </label>
 
       <label>
-        Ingredients:
+        Ingredients (comma-separated):
         <textarea
           name="ingredients"
           value={formData.ingredients}
@@ -75,7 +121,7 @@ export default function AddFoodForm() {
       </label>
 
       <label>
-        Nutritional Information:
+        Nutritional Info:
         <textarea
           name="nutritional_info"
           value={formData.nutritional_info}
@@ -83,116 +129,31 @@ export default function AddFoodForm() {
         />
       </label>
 
-      <label>
-        Total Fats (g):
-        <input
-          type="number"
-          name="total_fats"
-          value={formData.total_fats}
-          onChange={handleChange}
-        />
-      </label>
-
-      <label>
-        Saturated Fats (g):
-        <input
-          type="number"
-          name="saturated_fats"
-          value={formData.saturated_fats}
-          onChange={handleChange}
-        />
-      </label>
-
-      <label>
-        Trans Fats (g):
-        <input
-          type="number"
-          name="trans_fats"
-          value={formData.trans_fats}
-          onChange={handleChange}
-        />
-      </label>
-
-      <label>
-        Cholesterol (mg):
-        <input
-          type="number"
-          name="cholesterol"
-          value={formData.cholesterol}
-          onChange={handleChange}
-        />
-      </label>
-
-      <label>
-        Sodium (mg):
-        <input
-          type="number"
-          name="sodium"
-          value={formData.sodium}
-          onChange={handleChange}
-        />
-      </label>
-
-      <label>
-        Total Carbohydrates (g):
-        <input
-          type="number"
-          name="total_carbohydrates"
-          value={formData.total_carbohydrates}
-          onChange={handleChange}
-        />
-      </label>
-
-      <label>
-        Dietary Fiber (g):
-        <input
-          type="number"
-          name="dietary_fiber"
-          value={formData.dietary_fiber}
-          onChange={handleChange}
-        />
-      </label>
-
-      <label>
-        Total Sugars (g):
-        <input
-          type="number"
-          name="total_sugars"
-          value={formData.total_sugars}
-          onChange={handleChange}
-        />
-      </label>
-
-      <label>
-        Added Sugars (g):
-        <input
-          type="number"
-          name="added_sugars"
-          value={formData.added_sugars}
-          onChange={handleChange}
-        />
-      </label>
-
-
-      <label>
-        Calories:
-        <input
-          type="number"
-          name="calories"
-          value={formData.calories}
-          onChange={handleChange}
-        />
-      </label>
-
-      <label>
-        Protein (g):
-        <input
-          type="number"
-          name="protein"
-          value={formData.protein}
-          onChange={handleChange}
-        />
-      </label>
+      {/* numeric inputs */}
+      {[
+        ["total_fats", "Total Fats (g)"],
+        ["saturated_fats", "Saturated Fats (g)"],
+        ["trans_fats", "Trans Fats (g)"],
+        ["cholesterol", "Cholesterol (mg)"],
+        ["sodium", "Sodium (mg)"],
+        ["total_carbohydrates", "Total Carbohydrates (g)"],
+        ["dietary_fiber", "Dietary Fiber (g)"],
+        ["total_sugars", "Total Sugars (g)"],
+        ["added_sugars", "Added Sugars (g)"],
+        ["calories", "Calories"],
+        ["protein", "Protein (g)"],
+        ["carbs", "Carbs (g)"],
+      ].map(([name, label]) => (
+        <label key={name}>
+          {label}
+          <input
+            type="number"
+            name={name}
+            value={formData[name]}
+            onChange={handleChange}
+          />
+        </label>
+      ))}
 
       <label>
         Cuisine:
@@ -200,23 +161,20 @@ export default function AddFoodForm() {
       </label>
 
       <label>
-        Dietary Restriction:
-        <select
-          name="restriction"
-          value={formData.restriction}
-          onChange={handleChange}
-        >
-          <option value="">-- Select a restriction --</option>
-          {allowedRestrictions.map((r) => (
-            <option key={r} value={r}>
-              {r}
-            </option>
-          ))}
-        </select>
+        Dietary Restrictions:
+        <Select
+          isMulti
+          name="restrictions"
+          options={restrictionOptions}
+          onChange={handleRestrictionsChange}
+          value={restrictionOptions.filter(opt =>
+            formData.restrictions.includes(opt.value)
+          )}
+          placeholder="Select dietary restrictions..."
+        />
       </label>
 
       <button type="submit">Add Food</button>
     </form>
-
   );
 }

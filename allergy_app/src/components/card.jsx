@@ -1,13 +1,27 @@
 import React from "react";
+import { updateFood } from "../api/api.js";
+import EditFoodDetails from "./editFoodDetails.jsx";
 
-const Card = ({ food, showApproveButton = false, onApprove }) => {
+const Card = ({ food, showApproveButton = false, showEditButtons = false, onApprove }) => {
 
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    console.log("Editing food with ID:", food.id);
 
-    
+    // Navigate to edit page
+    window.location.href = `/edit-food/${food.id}`;
+  };
+
   const handleApprove = (e) => {
     e.stopPropagation();
     //onApprove?.(food.id);
     console.log("Approved food with ID:", food.id);
+    food.publication_status = "public";
+    onApprove?.(food);
+    console.log("Food approved:", food);
+    updateFood(food.id, food);
+
+
   };
 
   const handleReject = (e) => {
@@ -32,6 +46,14 @@ const Card = ({ food, showApproveButton = false, onApprove }) => {
           </button>
         </div>
       )}
+      {showEditButtons && (
+        <div className="button-group">
+          <button onClick={handleEdit} className="edit-btn">
+            Edit
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }
