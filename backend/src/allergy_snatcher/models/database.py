@@ -267,15 +267,13 @@ class Ingredient(Base):
     """
     __tablename__ = "ingredients"
     
-    id: Mapped[int] = mapped_column(primary_key=True)
-    
-    food_id: Mapped[int] = mapped_column(ForeignKey("foods.id"), nullable=False)
+    food_id: Mapped[int] = mapped_column(ForeignKey("foods.id"), nullable=False, primary_key=True)
     food: Mapped[Food] = relationship(back_populates="ingredients")
     
-    ingredient_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    ingredient_name: Mapped[str] = mapped_column(String(255), nullable=False, primary_key=True)
 
     def __repr__(self) -> str:
-        return f"<Ingredient(id={self.id!r}, name={self.ingredient_name!r})>"
+        return f"<Ingredient(name={self.ingredient_name!r})>"
 
 
 class DietRestrictAssoc(Base):
