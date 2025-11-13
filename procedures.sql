@@ -196,6 +196,16 @@ BEGIN
 
 END$$
 
+-- ====================================================================
+-- TRIGGER: foods_BEFORE_INSERT
+-- ====================================================================
+-- Purpose: This trigger fires before any new row is inserted into the
+--          `foods` table. Its primary job is to act as a safety net
+--          by ensuring that the `publication_status` is always set to
+--          'private' by default. This prevents foods from being
+--          accidentally public if the application layer fails to specify
+--          a status.
+-- ====================================================================
 CREATE DEFINER = CURRENT_USER TRIGGER `mydatabase`.`foods_BEFORE_INSERT` 
 BEFORE INSERT ON `foods` FOR EACH ROW
 BEGIN
