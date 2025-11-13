@@ -27,7 +27,7 @@ export default function AddFoodForm() {
 
   const allowedRestrictions = [
     "Dairy", "Nuts", "Gluten", "Kosher", "Vegan", "Red meat",
-    "Pork", "Keto", "Shellfish", "Eggs", "Soy", "Lactose","Gluten-Free",
+    "Pork", "Keto", "Shellfish", "Eggs", "Soy", "Lactose",
   ];
 
   // ✅ handles all input updates

@@ -1,0 +1,5 @@
+Run each script in the following order to get the desired results.
+
+1. create.sql    - creates the tables
+2. init_data.sql - puts data into the database (this is the sql instructions generated from our dataimport.py, included in case you want to look at it)
+3. crud.sql      - Utilizes CRUD operations on pre-existing and new items;
