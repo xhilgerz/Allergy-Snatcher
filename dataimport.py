@@ -94,7 +94,24 @@ Exit codes:
     4 = input directory not found
 """
 
-args = parser.parse_args()
+try:
+    args = parser.parse_args()
+except argparse.ArgumentError as e:
+    parser.error(str(e))
+    sys.exit(1)
+
+
+if args.debug:
+    logger.setLevel(logging.DEBUG)
+    logger.debug("Debug logging enabled")
+elif args.quiet:
+    logger.setLevel(logging.ERROR)
+elif args.verbose:
+    logger.setLevel(logging.INFO)
+    logger.debug("Verbose logging enabled")
+else:
+    logger.setLevel(logging.WARNING)
+    logger.debug("Logging disabled")
 
 db_opts = ['-H', '--host', '-P', '--port', '-u', '--user', '-p', '--password', '-d', '--database', '-s', '--ssl']
 db_arg_used = any(arg in sys.argv for arg in db_opts)
@@ -122,18 +139,6 @@ if db_arg_used:
 if args.output and db_arg_used:
     parser.error("argument -o/--output: not allowed with database options")
     sys.exit(1)
-
-if args.debug:
-    logger.setLevel(logging.DEBUG)
-    logger.debug("Debug logging enabled")
-elif args.quiet:
-    logger.setLevel(logging.ERROR)
-elif args.verbose:
-    logger.setLevel(logging.INFO)
-    logger.debug("Verbose logging enabled")
-else:
-    logger.setLevel(logging.WARNING)
-    logger.debug("Logging disabled")
 
 from pydantic_yaml import parse_yaml_file_as
 
