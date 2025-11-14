@@ -291,6 +291,22 @@ def update_food_by_id(food_id):
         data = request.get_json()
         validated_data = UpdateFoodSchema(**data)
 
+        if validated_data.publication_status:
+            if g.User.role == 'admin' and food.publication_status != 'private':
+                if food.publication_status == 'unlisting':
+                    food.publication_status = validated_data.publication_status
+                elif food.publication_status == 'public':
+                    food.publication_status = validated_data.publication_status
+                else:
+                    return jsonify({"error": "Forbidden"}), 403
+            elif food.publication_status == 'private' and g.user.id == food.user_id:
+                if validated_data.publication_status == 'public':
+                    return jsonify({"error": "Forbidden"}), 403
+                else:
+                    food.publication_status = validated_data.publication_status
+            else:
+                return jsonify({"error": "Forbidden"}), 403
+
         for field, value in validated_data.model_dump(exclude_unset=True).items():
             if field == 'ingredients':
                 food.ingredients = []
