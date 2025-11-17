@@ -78,7 +78,7 @@ class IngredientSchema(BaseModel):
     """
     Schema for representing an ingredient.
     """
-    id: int
+    food_id: int
     ingredient_name: str
 
     model_config = {"from_attributes": True}

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getFoods } from "../../api/api"; // or wherever your getFoods() lives
 
 export default function RestrictionsPage() {
+  
   const { restrictionName } = useParams();       // ex: "Vegan"
   const [foods, setFoods] = useState([]);        // holds foods from the API
 

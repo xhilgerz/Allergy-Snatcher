@@ -264,18 +264,22 @@ class Food(Base):
 class Ingredient(Base):
     """
     Represents an ingredient for a food item.
+    The legacy schema does not include an auto-incrementing ID,
+    so we model the natural key (food_id + ingredient_name).
     """
     __tablename__ = "ingredients"
     
-    id: Mapped[int] = mapped_column(primary_key=True)
-    
-    food_id: Mapped[int] = mapped_column(ForeignKey("foods.id"), nullable=False)
+    food_id: Mapped[int] = mapped_column(
+        ForeignKey("foods.id"), primary_key=True, nullable=False
+    )
     food: Mapped[Food] = relationship(back_populates="ingredients")
     
-    ingredient_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    ingredient_name: Mapped[str] = mapped_column(
+        String(255), primary_key=True, nullable=False
+    )
 
     def __repr__(self) -> str:
-        return f"<Ingredient(id={self.id!r}, name={self.ingredient_name!r})>"
+        return f"<Ingredient(food_id={self.food_id!r}, name={self.ingredient_name!r})>"
 
 
 class DietRestrictAssoc(Base):

@@ -1,49 +1,406 @@
+:root {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  color-scheme: light;
+  --bg-base: #f6f7fb;
+  --bg-card: #ffffff;
+  --bg-elevated: #fefefe;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --border-muted: rgba(31, 41, 55, 0.08);
+  --primary: #5568fe;
+  --primary-dark: #3c4ad6;
+  --accent: #ff6b6b;
+  --success: #2fbf6b;
+  --warning: #ffd166;
+  --shadow-soft: 0 20px 45px rgba(15, 23, 42, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #f1f5ff, var(--bg-base));
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+#root {
+  min-height: 100vh;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), #f7f8fd 60%);
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
+img {
+  max-width: 100%;
+  display: block;
+}
 
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Navigation */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1rem 2.5rem;
+  margin: 0 auto 2rem;
+  max-width: 1100px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(84, 91, 232, 0.12);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
+  position: sticky;
+  top: 1rem;
+  z-index: 10;
+}
+
+.navbar a {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.navbar a:hover {
+  color: var(--primary);
+  background: rgba(85, 104, 254, 0.08);
+}
+
+/* Layout containers */
+.home-container,
+.about-container,
+.add-food-container,
+.edit-food-container,
+.approve-food-container,
+.admin-login,
+.food-list,
+.FoodContainer {
+  max-width: 1100px;
+  margin: 0 auto 3rem;
+  padding: 2rem;
+  background: var(--bg-card);
+  border-radius: 28px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-muted);
+}
+
+.home-container h1,
+.about-container h1,
+.add-food-container h1,
+.edit-food-container h1,
+.approve-food-container h1 {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  margin-bottom: 0.75rem;
+}
+
+.home-container p,
+.about-container p,
+.add-food-container p,
+.edit-food-container p,
+.approve-food-container p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Food list + cards */
+.food-list {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.food-group {
+  margin-bottom: 2.5rem;
+}
+
+.food-group h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.4rem;
+  color: var(--primary);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.food-group h2:hover {
+  transform: translateX(4px);
+}
 
 .food-scroll-container {
   display: flex;
   flex-direction: row;
   overflow-x: auto;
   scroll-behavior: smooth;
-  gap: 1rem;
-  padding: 1rem;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  gap: 1.25rem;
+  padding: 1rem 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 23, 42, 0.25) transparent;
 }
 
-/* Scrollbar styling (optional) */
 .food-scroll-container::-webkit-scrollbar {
   height: 8px;
 }
+
 .food-scroll-container::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-.food-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: rgba(15, 23, 42, 0.25);
+  border-radius: 999px;
 }
 
 .Card {
-  background-color: #fff;
-  flex: 0 0 300px;   /* ← KEY LINE: lock width in flexbox */
-  height: 350px;
-  padding: 1rem;
-  text-align: center;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  background-color: var(--bg-card);
+  flex: 0 0 280px;
+  min-height: 320px;
+  padding: 1.5rem;
+  border-radius: 22px;
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.Card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 25px 45px rgba(15, 23, 42, 0.14);
+}
+
+.Card h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+
+.Card h5 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.Card h6 {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.button-group button {
+  flex: 1;
+  border: none;
+  border-radius: 999px;
+  padding: 0.55rem 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.approve-btn {
+  background: var(--success);
+  box-shadow: 0 8px 15px rgba(47, 191, 107, 0.3);
+}
+
+.reject-btn {
+  background: var(--accent);
+  box-shadow: 0 8px 15px rgba(255, 107, 107, 0.35);
+}
+
+.edit-btn {
+  background: var(--primary);
+  box-shadow: 0 8px 15px rgba(85, 104, 254, 0.35);
+}
+
+.button-group button:hover {
+  transform: translateY(-2px);
+}
+
+/* Forms */
+.food-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.food-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.food-form input,
+.food-form textarea,
+.food-form select {
+  border-radius: 14px;
+  border: 1px solid var(--border-muted);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.9);
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+
+.food-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.food-form input:focus,
+.food-form textarea:focus,
+.food-form select:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(85, 104, 254, 0.1);
+}
+
+.food-form__actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.food-form__actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1.75rem;
+  font-weight: 600;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.food-form__actions button[type="submit"] {
+  background: linear-gradient(120deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(85, 104, 254, 0.4);
+}
+
+.food-form__actions .delete-btn {
+  background: var(--accent);
+  color: #fff;
+}
+
+.food-form__actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.food-form__actions button:not(:disabled):hover {
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+}
+
+/* Admin login */
+.admin-login {
+  max-width: 520px;
+}
+
+.admin-login__form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.admin-login__form input {
+  border-radius: 999px;
+  border: 1px solid var(--border-muted);
+  padding: 0.85rem 1.1rem;
+  font-size: 1rem;
+}
+
+.admin-login__form button,
+.admin-login__actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1.75rem;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgba(85, 104, 254, 0.35);
+}
+
+.admin-login__actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.admin-login__error {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Pending foods / edit lists */
+.PendingFoodsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.approve-food-container,
+.edit-food-container {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Modal */
+.food-modal__backdrop {
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.food-modal__dialog {
+  animation: scaleIn 0.25s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: translateY(10px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
