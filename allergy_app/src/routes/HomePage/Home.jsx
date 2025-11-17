@@ -28,8 +28,7 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      <h1>Welcome to the Allergy Snatcher</h1>
-      <p>Welcome to our cool website</p>
+      <h1>Allergy Snatcher</h1>
 
       {/* FoodList component goes here */}
 

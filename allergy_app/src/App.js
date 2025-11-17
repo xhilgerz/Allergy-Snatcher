@@ -8,15 +8,16 @@ import RestrictionsPage from "./routes/Food/RestrictionsPage.jsx";
 import EditFood from "./routes/Account/Admin/EditFoods.jsx";
 import EditFoodDetails from "./components/editFoodDetails.jsx";
 import Admin from "./routes/Account/Admin/LogIn.jsx";
+import ManageTags from "./routes/Account/Admin/ManageTags.jsx";
 
 function App() {
   return (
     <Router>
       <nav className="navbar">
         <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
         <Link to="/add-food">Add Food</Link>
         <Link to="/admin">Admin</Link>
+        <Link to="/about">About</Link>
       </nav>
 
       <Routes>
@@ -28,6 +29,7 @@ function App() {
         <Route path="/edit-food" element={<EditFood />} />
         <Route path="/edit-food/:foodId" element={<EditFoodDetails />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/manage-tags" element={<ManageTags />} />
 
       </Routes>
     </Router>

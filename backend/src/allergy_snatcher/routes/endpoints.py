@@ -395,7 +395,7 @@ def create_food():
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/categories/", methods=['POST'])
-@require_role('admin')
+#@require_role('admin')
 def create_category():
     """
     HTTP POST
@@ -414,7 +414,7 @@ def create_category():
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/cuisines/", methods=['POST'])
-@require_role('admin')
+#@require_role('admin')
 def create_cuisine():
     """
     HTTP POST
@@ -433,7 +433,7 @@ def create_cuisine():
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/diet-restrictions/", methods=['POST'])
-@require_role('admin')
+#@require_role('admin')
 def create_diet_restriction():
     """
     HTTP POST
@@ -452,7 +452,7 @@ def create_diet_restriction():
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/categories/<int:category_id>", methods=['DELETE'])
-@require_role('admin')
+#@require_role('admin')
 def delete_category_by_id(category_id):
     """
     HTTP DELETE
@@ -471,7 +471,7 @@ def delete_category_by_id(category_id):
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/cuisines/<int:cuisine_id>", methods=['DELETE'])
-@require_role('admin')
+#@require_role('admin')
 def delete_cuisine_by_id(cuisine_id):
     """
     HTTP DELETE
@@ -490,7 +490,7 @@ def delete_cuisine_by_id(cuisine_id):
         return jsonify({"error": str(e)}), 400
 
 @routes.route("/api/diet-restrictions/<int:restriction_id>", methods=['DELETE'])
-@require_role('admin')
+#@require_role('admin')
 def delete_diet_restriction_by_id(restriction_id):
     """
     HTTP DELETE

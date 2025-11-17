@@ -1,12 +1,11 @@
-Dairy
-Nuts
-Gluten
-Kusher
+Dairy-Free
+Nut-Free
+Gluten-Free
+Kosher
 Vegan
-Red meat
-Pork
+Pork-Free
 Keto
-Shellfish
-Eggs
+Shellfish-Free
+Eggs-Free
 Soy
-Lactose
+Lactose-Free

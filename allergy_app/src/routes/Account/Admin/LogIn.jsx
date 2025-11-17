@@ -65,6 +65,9 @@ export default function LogIn() {
             <button type="button" onClick={() => navigate("/edit-food")}>
               Edit Foods
             </button>
+            <button type="button" onClick={() => navigate("/manage-tags")}>
+              Manage Tags
+            </button>
             <button type="button" onClick={handleLogout}>
               Log out
             </button>
