@@ -27,7 +27,7 @@ export default function EditFood() {
     <div className="edit-food-page">
       <div className="edit-food-container">
         <h1>Edit Foods</h1>
-        <p>This is where admins can edit existing food items.</p>
+        
       </div>
 
       <div className="PendingFoodsContainer">

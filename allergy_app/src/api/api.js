@@ -134,6 +134,57 @@ export async function getDietRestrictions() {
 
 }
 
+export async function createDietRestriction(restrictionData) {
+  try {
+    const response = await fetch(`/api/diet-restrictions/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(restrictionData),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Backend error:", errText);
+      throw new Error(
+        `Failed to create diet restriction (status ${response.status})`
+      );
+    }
+
+    const restriction = await response.json();
+    console.log("Created restriction: ", restriction);
+    return restriction;
+  } catch (error) {
+    console.error("Error creating restriction:", error);
+    throw error;
+  }
+}
+
+export async function deleteDietRestriction(restriction_id) {
+  try {
+    const response = await fetch(`/api/diet-restrictions/${restriction_id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Backend error:", errText);
+      throw new Error(
+        `Failed to delete diet restriction (status ${response.status})`
+      );
+    }
+
+    const result = await response.json();
+    console.log("Deleted restriction:", result);
+    return result;
+  } catch (error) {
+    console.error("Error deleting restriction:", error);
+    throw error;
+  }
+}
+
 
 
 export async function getCuisines() {
@@ -152,4 +203,105 @@ export async function getCuisines() {
     throw error;
   }
 
+}
+
+export async function createCuisine(cuisineData){
+
+  try {
+    const response = await fetch(`/api/cuisines/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", 
+      body: JSON.stringify(cuisineData),
+    });
+
+    // Handle response errors
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Backend error:", errText);
+      throw new Error(`Failed to create cuisine (status ${response.status})`);
+    }
+
+    const updatedFood = await response.json();
+    console.log("Created food: ", updatedFood);
+    return updatedFood;
+  } catch (error) {
+    console.error("Error creaiting cuisine:", error);
+    throw error;
+  }
+}
+
+export async function deleteCuisine(cuisine_id){
+  try {
+    const response = await fetch(`/api/cuisines/${cuisine_id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+    // Handle response errors
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Backend error:", errText);
+      throw new Error(`Failed to delete cuisine (status ${response.status})`);
+    }
+
+    const deletedFood = await response.json();
+    console.log("Deleted food:", deletedFood);
+    return deletedFood;
+  } catch (error) {
+    console.error("Error deleting cuisine:", error);
+    throw error;
+  }
+}
+
+
+export async function createRestriction(restrictionData){
+
+  try {
+    const response = await fetch(`/api/cuisines/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", 
+      body: JSON.stringify(restrictionData),
+    });
+
+    // Handle response errors
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Backend error:", errText);
+      throw new Error(`Failed to create cuisine (status ${response.status})`);
+    }
+
+    const updatedFood = await response.json();
+    console.log("Created food: ", updatedFood);
+    return updatedFood;
+  } catch (error) {
+    console.error("Error creaiting cuisine:", error);
+    throw error;
+  }
+}
+
+export async function deleteRestriction(restriction_id){
+  try {
+    const response = await fetch(`/api/cuisines/${restriction_id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+    // Handle response errors
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Backend error:", errText);
+      throw new Error(`Failed to delete cuisine (status ${response.status})`);
+    }
+
+    const deletedFood = await response.json();
+    console.log("Deleted food:", deletedFood);
+    return deletedFood;
+  } catch (error) {
+    console.error("Error deleting cuisine:", error);
+    throw error;
+  }
 }
