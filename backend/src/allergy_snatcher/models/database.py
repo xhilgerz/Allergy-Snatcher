@@ -264,6 +264,8 @@ class Food(Base):
 class Ingredient(Base):
     """
     Represents an ingredient for a food item.
+    The legacy schema does not include an auto-incrementing ID,
+    so we model the natural key (food_id + ingredient_name).
     """
     __tablename__ = "ingredients"
     

@@ -22,6 +22,19 @@ export async function getFoods() {
 
 }
 
+export async function getFoodById(foodId) {
+  try {
+    const response = await fetch(`/api/foods/${foodId}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch food ${foodId}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching food:", error);
+    throw error;
+  }
+}
+
 export async function addFood(foodData) {
   try {
     const response = await fetch(`/api/foods/`, {
@@ -101,4 +114,42 @@ export async function deleteFood(food_id) {
     console.error("Error deleting food:", error);
     throw error;
   }
+}
+
+export async function getDietRestrictions() {
+  console.log("API_BASE =", process.env.REACT_APP_API_BASE_URL);
+
+  try {
+    const response = await fetch("/api/diet-restrictions/");
+    if (!response.ok) {
+      throw new Error("Failed to fetch diet restrictions");
+    }
+    const data = await response.json();
+    console.log(" Data fetched from Flask:", data); 
+    return data;
+  } catch (error) {
+    console.error("Error fetching foods:", error);
+    throw error;
+  }
+
+}
+
+
+
+export async function getCuisines() {
+  console.log("API_BASE =", process.env.REACT_APP_API_BASE_URL);
+
+  try {
+    const response = await fetch("/api/cuisines/");
+    if (!response.ok) {
+      throw new Error("Failed to fetch cuisines");
+    }
+    const data = await response.json();
+    console.log(" Data fetched from Flask:", data); 
+    return data;
+  } catch (error) {
+    console.error("Error fetching cuisines:", error);
+    throw error;
+  }
+
 }

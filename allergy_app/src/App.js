@@ -7,6 +7,7 @@ import ApproveFood from "./routes/Account/Admin/ApproveFood.jsx";
 import RestrictionsPage from "./routes/Food/RestrictionsPage.jsx";
 import EditFood from "./routes/Account/Admin/EditFoods.jsx";
 import EditFoodDetails from "./components/editFoodDetails.jsx";
+import Admin from "./routes/Account/Admin/LogIn.jsx";
 
 function App() {
   return (
@@ -15,8 +16,7 @@ function App() {
         <Link to="/">Home</Link>
         <Link to="/about">About</Link>
         <Link to="/add-food">Add Food</Link>
-        <Link to="/approve-food">Approve Food</Link> {/* New link for PendingFoods */}
-        <Link to="/edit-food">Edit Food</Link>
+        <Link to="/admin">Admin</Link>
       </nav>
 
       <Routes>
@@ -27,6 +27,7 @@ function App() {
         <Route path="/restrictions/:restrictionName" element={<RestrictionsPage />} />
         <Route path="/edit-food" element={<EditFood />} />
         <Route path="/edit-food/:foodId" element={<EditFoodDetails />} />
+        <Route path="/admin" element={<Admin />} />
 
       </Routes>
     </Router>
