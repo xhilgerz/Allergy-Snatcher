@@ -18,7 +18,8 @@ RUN uv venv /opt/venv
 WORKDIR /app
 # Copy only necessary files to leverage Docker cache
 COPY ./backend/pyproject.toml ./backend/uv.lock* ./
-RUN . /opt/venv/bin/activate && uv pip install -r pyproject.toml
+# Use uv pip sync to install from the lock file
+RUN . /opt/venv/bin/activate && uv pip sync uv.lock
 COPY ./backend .
 RUN . /opt/venv/bin/activate && uv pip install --no-cache-dir .
 
@@ -37,7 +38,8 @@ WORKDIR /home/appuser/app
 
 # Copy virtual env and backend code from builder stages
 COPY --from=backend-builder /opt/venv /opt/venv
-COPY --from=backend-builder --chown=appuser:appuser /app/src/ ./src/
+# Copy the entire application, not just src
+COPY --from=backend-builder --chown=appuser:appuser /app/ ./
 
 # Copy built frontend files from the frontend-builder stage
 COPY --from=frontend-builder --chown=appuser:appuser /app/build ./static
@@ -45,4 +47,4 @@ COPY --from=frontend-builder --chown=appuser:appuser /app/build ./static
 # The Flask app is configured to serve files from this 'static' directory.
 
 EXPOSE 5000
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "src.allergy_snatcher.wsgi:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "allergy_snatcher.__main__:app"]
