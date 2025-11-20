@@ -19,7 +19,7 @@ WORKDIR /app
 # Copy only necessary files to leverage Docker cache
 COPY ./backend/pyproject.toml ./backend/uv.lock* ./
 # Use uv pip sync to install from the lock file
-RUN . /opt/venv/bin/activate && uv pip sync uv.lock
+RUN . /opt/venv/bin/activate && uv pip install -r pyproject.toml
 COPY ./backend .
 RUN . /opt/venv/bin/activate && uv pip install --no-cache-dir .
 
