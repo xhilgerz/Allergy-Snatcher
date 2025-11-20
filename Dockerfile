@@ -34,7 +34,8 @@ ENV FLASK_DEBUG=false
 # Create a non-root user
 RUN useradd --create-home appuser
 USER appuser
-WORKDIR /home/appuser/app
+ENV APP_HOME=/home/appuser/app
+WORKDIR $APP_HOME
 
 # Copy virtual env and backend code from builder stages
 COPY --from=backend-builder /opt/venv /opt/venv

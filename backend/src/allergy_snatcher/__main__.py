@@ -6,7 +6,12 @@ from flask_cors import CORS
 
 def create_app() -> Flask:
     """Creates and configures the Flask app."""
-    app = Flask(__name__, static_folder='../static', static_url_path='/')
+    # Use an absolute path. The Dockerfile sets WORKDIR to /home/appuser/app
+    # and copies the frontend to ./static, so the path is /home/appuser/app/static
+    base_dir = os.environ.get('APP_HOME', '/home/appuser/app')
+    static_dir = os.path.join(base_dir, 'static')
+
+    app = Flask(__name__, static_folder=static_dir, static_url_path='/')
 
     #CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
