@@ -1,9 +1,5 @@
 // src/api/api.js
 
-const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
-
-
 export async function getAdminPassword() {
   const response = await fetch(`/admin/password`);
   if (!response.ok) {
