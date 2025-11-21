@@ -26,6 +26,7 @@ services:
       DB_PORT: 3306
       DB_NAME: mydatabase
       SECRET_KEY: secret
+      ADMIN_PASSWORD: UTSA
     ports:
       - "5001:5000"
     volumes:

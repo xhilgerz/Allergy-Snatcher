@@ -21,6 +21,7 @@ def create_app() -> Flask:
     db_host = os.environ.get('DB_HOST')
     db_port = os.environ.get('DB_PORT')
     db_name = os.environ.get('DB_NAME')
+    admin_password = os.environ.get('ADMIN_PASSWORD', 'change-me')
     
 
     if not all([db_user, db_password, db_host, db_port, db_name]):
@@ -29,6 +30,7 @@ def create_app() -> Flask:
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', None) # Change this in production
+    app.config['ADMIN_PASSWORD'] = admin_password
     if not app.config['SECRET_KEY']:
         raise ValueError('SECRET_KEY is not set')
 

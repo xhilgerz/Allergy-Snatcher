@@ -199,6 +199,19 @@ def oauth_login(provider):
     redirect_uri = url_for('auth.oauth_callback', provider=provider, _external=True)
     return oauth.create_client(provider).authorize_redirect(redirect_uri)
 
+
+@auth_bp.route('/admin/password', methods=['GET'])
+def get_admin_password():
+    """
+    Returns the admin password configured on the backend so the frontend
+    can validate logins without bundling the secret in its build artifacts.
+    """
+    password = current_app.config.get('ADMIN_PASSWORD')
+    if not password:
+        return jsonify({'error': 'Admin password is not configured'}), 500
+
+    return jsonify({'password': password})
+
 @auth_bp.route('/oauth/<provider>/callback')
 def oauth_callback(provider):
     client = oauth.create_client(provider)
