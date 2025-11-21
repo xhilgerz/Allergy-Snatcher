@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { updateFood, deleteFood } from "../api/api.js";
 
-const Card = ({ food, showApproveButton = false, showEditButtons = false, onApprove }) => {
+const Card = ({
+  food,
+  showApproveButton = false,
+  showEditButtons = false,
+  onApprove,
+  onReject,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleEdit = (e) => {
@@ -12,24 +18,18 @@ const Card = ({ food, showApproveButton = false, showEditButtons = false, onAppr
     window.location.href = `/edit-food/${food.id}`;
   };
 
-  const handleApprove = (e) => {
+  const handleApprove = async (e) => {
     e.stopPropagation();
-    //onApprove?.(food.id);
-    console.log("Approved food with ID:", food.id);
-    food.publication_status = "public";
-    onApprove?.(food);
-    console.log("Food approved:", food);
-    updateFood(food.id, food);
-
-
+    const payload = { ...food, publication_status: "public" };
+    await updateFood(food.id, payload);
+    onApprove?.();
   };
 
-  const handleReject = (e) => {
+  const handleReject = async (e) => {
     e.stopPropagation();
-    console.log("Rejected food with ID:", food.id);
-    deleteFood(food.id,food);
-    
-  }
+    await deleteFood(food.id, food);
+    onReject?.();
+  };
 
   return (
     <>

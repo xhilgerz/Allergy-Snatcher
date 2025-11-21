@@ -9,7 +9,7 @@ export default function AddFood() {
   const handleCreate = async (payload) => {
     await addFood(payload);
     alert("Food added successfully!");
-    navigate("/edit-food");
+    navigate("/");
   };
 
   return (

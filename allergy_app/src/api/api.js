@@ -4,6 +4,18 @@ const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 
 
+export async function getAdminPassword() {
+  const response = await fetch(`/admin/password`);
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(`Failed to load admin password: ${message || response.status}`);
+  }
+
+  const data = await response.json();
+  return data.password;
+}
+
+
 export async function getFoods() {
   console.log("API_BASE =", process.env.REACT_APP_API_BASE_URL);
 

@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
+import { getAdminPassword } from "../../../api/api.js";
 
 export default function LogIn() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [backendPassword, setBackendPassword] = useState("");
+  const [isLoadingPassword, setIsLoadingPassword] = useState(true);
 
   const navigate = useNavigate();
 
@@ -20,18 +21,38 @@ export default function LogIn() {
     }
   }, []);
 
+  // Load the admin password from the backend so it isn't bundled in the frontend
+  useEffect(() => {
+    (async () => {
+      try {
+        const fetchedPassword = await getAdminPassword();
+        setBackendPassword(fetchedPassword || "");
+      } catch (err) {
+        console.error("Unable to fetch admin password from backend", err);
+        setError("Admin password is not configured on the server.");
+      } finally {
+        setIsLoadingPassword(false);
+      }
+    })();
+  }, []);
+
   // Handle login
   const handleSubmit = (event) => {
     event.preventDefault();
     setError("");
     setStatus("");
 
-    if (!ADMIN_PASSWORD) {
-      setError("Admin password is not configured. Check your .env file.");
+    if (isLoadingPassword) {
+      setStatus("Loading admin settings, please try again.");
       return;
     }
 
-    if (password === ADMIN_PASSWORD) {
+    if (!backendPassword) {
+      setError("Admin password is not configured on the server.");
+      return;
+    }
+
+    if (password === backendPassword) {
       localStorage.setItem("isAdminAuthenticated", "true");
       setIsAuthenticated(true);
       setStatus("Success! Choose what you want to do next.");

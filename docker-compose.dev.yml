@@ -39,6 +39,7 @@ services:
         max-file: "5"
     env_file:
       - be.env
+      ADMIN_PASSWORD: UTSA
     ports:
       - "5001:5000"
     volumes:
