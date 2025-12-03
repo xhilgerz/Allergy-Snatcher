@@ -121,10 +121,10 @@ def refresh(referrer:str='/'):
     
     db.session.commit()
 
-    # response = jsonify({
-    #     'message': 'Token refreshed successfully'
-    # })
-    response = redirect(referrer, code=302)
+    response = jsonify({
+        'message': 'Token refreshed successfully'
+    })
+    # response = redirect(referrer, code=302)
     response.set_cookie(
         'session_token', 
         new_session_token, 
