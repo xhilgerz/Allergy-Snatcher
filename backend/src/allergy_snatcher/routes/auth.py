@@ -233,12 +233,14 @@ def get_admin_password():
     """
     Returns the admin password configured on the backend so the frontend
     can validate logins without bundling the secret in its build artifacts.
+    @deprecated
     """
-    password = current_app.config.get('ADMIN_PASSWORD')
-    if not password:
-        return jsonify({'error': 'Admin password is not configured'}), 500
+    # password = current_app.config.get('ADMIN_PASSWORD')
+    # if not password:
+    #     return jsonify({'error': 'Admin password is not configured'}), 500
 
-    return jsonify({'password': password})
+    # return jsonify({'password': password})
+    return jsonify({"message": "Deprecated"}), 403
 
 @auth_bp.route('/oauth/<provider>/callback')
 def oauth_callback(provider):
