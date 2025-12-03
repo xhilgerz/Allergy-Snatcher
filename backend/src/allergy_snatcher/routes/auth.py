@@ -86,34 +86,37 @@ def login():
     
     return response
 
-@auth_bp.route('/refresh', methods=['POST'])
-def refresh(referrer:str='/'):
-    refresh_token = request.cookies.get('refresh_token')
-
+def _refresh_session(refresh_token: str):
+    """
+    Refreshes a user session using a refresh token.
+    
+    Args:
+        refresh_token: The refresh token from the user.
+        
+    Returns:
+        A tuple containing the new session token, new refresh token,
+        new session expiry, and new refresh expiry.
+        Returns a tuple of Nones if the refresh token is invalid or expired.
+    """
     if not refresh_token:
-        return jsonify({'error': 'Missing refresh token'}), 401
+        return None, None, None, None
 
     user_session = UserSession.query.filter_by(refresh_token=refresh_token).first()
 
     if not user_session:
-        return jsonify({'error': 'Invalid refresh token'}), 401
+        return None, None, None, None
 
     if user_session.refresh_token_expires_at < datetime.datetime.now(datetime.timezone.utc):
-        # For security, if a compromised refresh token is used after expiry, delete the session.
         db.session.delete(user_session)
         db.session.commit()
-        return jsonify({'error': 'Refresh token expired'}), 401
+        return None, None, None, None
 
     # --- Token Rotation ---
-    # Generate new tokens
     new_session_token = secrets.token_hex(32)
     new_refresh_token = secrets.token_hex(32)
-    
-    # Define new expiry times
     new_session_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
     new_refresh_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30)
 
-    # Update the session in the database
     user_session.session_token = new_session_token
     user_session.expires_at = new_session_expiry
     user_session.refresh_token = new_refresh_token
@@ -121,10 +124,19 @@ def refresh(referrer:str='/'):
     
     db.session.commit()
 
+    return new_session_token, new_refresh_token, new_session_expiry, new_refresh_expiry
+
+@auth_bp.route('/refresh', methods=['POST'])
+def refresh(referrer:str='/'):
+    refresh_token = request.cookies.get('refresh_token')
+    new_session_token, new_refresh_token, new_session_expiry, new_refresh_expiry = _refresh_session(refresh_token)
+
+    if not new_session_token:
+        return jsonify({'error': 'Invalid or expired refresh token'}), 401
+
     response = jsonify({
         'message': 'Token refreshed successfully'
     })
-    # response = redirect(referrer, code=302)
     response.set_cookie(
         'session_token', 
         new_session_token, 
@@ -137,7 +149,7 @@ def refresh(referrer:str='/'):
         'refresh_token', 
         new_refresh_token, 
         httponly=True, 
-        secure=True, # Set to False if not using HTTPS in development
+        secure=True,
         samesite='Lax',
         expires=new_refresh_expiry
     )
@@ -148,36 +160,71 @@ def refresh(referrer:str='/'):
 def status():
     """
     Checks if a user is logged in by verifying their session token.
-    Returns a 200 OK status in all cases, with a JSON body
-    indicating the authentication state.
+    If the session token is expired, it attempts to refresh it using the refresh token.
     """
-    auth_header = request.headers.get('Authorization')
+
+    session_token = request.cookies.get('session_token')
     
-    # Default response for a non-authenticated user
-    not_logged_in_response = jsonify({"logged_in": False, "user": None})
 
-    if not auth_header or not auth_header.startswith('Bearer '):
-        return not_logged_in_response, 200
+    user_session = None
+    if session_token:
+        user_session = UserSession.query.filter_by(session_token=session_token).first()
 
-    try:
-        session_token = auth_header.split(' ')[1]
-    except IndexError:
-        return not_logged_in_response, 200
+    # If session is invalid or expired, try to refresh
+    if not user_session or user_session.expires_at < datetime.datetime.now(datetime.timezone.utc):
+        refresh_token = request.cookies.get('refresh_token')
+        if not refresh_token:
+            return jsonify({"logged_in": False, "user": None}), 200
 
-    if not session_token:
-        return not_logged_in_response, 200
+        new_session_token, new_refresh_token, new_session_expiry, new_refresh_expiry = _refresh_session(refresh_token)
 
-    user_session = UserSession.query.filter_by(session_token=session_token).first()
+        if not new_session_token:
+            # If refresh fails, clear the potentially compromised refresh token
+            response = jsonify({"logged_in": False, "user": None})
+            response.delete_cookie('refresh_token', path='/', samesite='Lax')
+            return response, 200
 
-    if not user_session:
-        return not_logged_in_response, 200
+        # If refresh is successful, fetch the user session again with the new token
+        user_session = UserSession.query.filter_by(session_token=new_session_token).first()
+        if not user_session:
+            # This should not happen if _refresh_session succeeded, but as a safeguard:
+            return jsonify({"logged_in": False, "user": None}), 200
+
+        # User is now considered logged in with the new session
+        user = user_session.user
+        response = jsonify({
+            "logged_in": True,
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "role": user.role,
+                "first_name": user.first_name,
+                "last_name": user.last_name
+            }
+        })
         
-    if user_session.expires_at < datetime.datetime.now(datetime.timezone.utc):
-        return not_logged_in_response, 200
+        # Set the new tokens in cookies
+        response.set_cookie(
+            'session_token', 
+            new_session_token, 
+            httponly=True, 
+            secure=True,
+            samesite='Lax',
+            expires=new_session_expiry
+        )
+        response.set_cookie(
+            'refresh_token', 
+            new_refresh_token, 
+            httponly=True, 
+            secure=True,
+            samesite='Lax',
+            expires=new_refresh_expiry
+        )
+        return response, 200
 
-    # If all checks pass, the user is logged in.
+    # If the original session token was valid
     user = user_session.user
-    
     return jsonify({
         "logged_in": True,
         "user": {
@@ -200,7 +247,8 @@ def logout():
     db.session.commit()
 
     response = jsonify({'message': 'Logged out successfully'})
-    # Also instruct the client to clear the refresh token cookie
+    # Also instruct the client to clear the cookies
+    response.delete_cookie('session_token', path='/', samesite='Lax')
     response.delete_cookie('refresh_token', path='/', samesite='Lax')
     
     return response
@@ -290,16 +338,25 @@ def oauth_callback(provider):
     db.session.add(new_session)
     db.session.commit()
 
-    # Redirect to the frontend with the session token
-    frontend_url = f"{current_app.config['FRONTEND_URL']}/auth/callback?session_token={session_token}&expires_at={session_expiry.isoformat()}"
+    # Redirect to the frontend's auth callback page
+    frontend_url = f"{current_app.config['FRONTEND_URL']}/auth/callback"
     
-    # Also set the refresh token as a cookie
     response = redirect(frontend_url)
+    
+    # Set tokens as HttpOnly cookies
+    response.set_cookie(
+        'session_token', 
+        session_token, 
+        httponly=True, 
+        secure=True,
+        samesite='Lax',
+        expires=session_expiry
+    )
     response.set_cookie(
         'refresh_token', 
         refresh_token, 
         httponly=True, 
-        secure=True, # Set to False if not using HTTPS in development
+        secure=True,
         samesite='Lax',
         expires=refresh_expiry
     )
