@@ -6,9 +6,7 @@ import datetime
 def require_session(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # auth_header = request.headers.get('Authorization')
-        # if not auth_header or not auth_header.startswith('Bearer '):
-        #     return jsonify({"error": "Missing or invalid Authorization header"}), 401
+        
         session_token = request.cookies.get('session_token')
         if not session_token:
             return jsonify({"error": "Missing session token"}), 401
@@ -58,13 +56,6 @@ def optional_session(f):
         g.session = None
         
         session_token = request.cookies.get('session_token')
-        # auth_header = request.headers.get('Authorization')
-        
-        # if auth_header and auth_header.startswith('Bearer '):
-        #     try:
-        #         session_token = auth_header.split(' ')[1]
-        #     except IndexError:
-        #         session_token = None
 
         if session_token:
             user_session = UserSession.query.filter_by(session_token=session_token).first()
