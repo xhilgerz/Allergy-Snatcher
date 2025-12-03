@@ -65,11 +65,16 @@ def login():
     db.session.commit()
 
     response = jsonify({
-        'message': 'Logged in successfully',
-        'session_token': session_token,
-        'expires_at': session_expiry.isoformat()
+        'message': 'Logged in successfully'
     })
-    
+    response.set_cookie(
+        'session_token', 
+        session_token, 
+        httponly=True, 
+        secure=True,
+        samesite='Lax',
+        expires=session_expiry
+    )
     response.set_cookie(
         'refresh_token', 
         refresh_token, 
@@ -82,7 +87,7 @@ def login():
     return response
 
 @auth_bp.route('/refresh', methods=['POST'])
-def refresh():
+def refresh(referrer:str='/'):
     refresh_token = request.cookies.get('refresh_token')
 
     if not refresh_token:
@@ -116,12 +121,18 @@ def refresh():
     
     db.session.commit()
 
-    response = jsonify({
-        'message': 'Token refreshed successfully',
-        'session_token': new_session_token,
-        'expires_at': new_session_expiry.isoformat()
-    })
-    
+    # response = jsonify({
+    #     'message': 'Token refreshed successfully'
+    # })
+    response = redirect(referrer, code=302)
+    response.set_cookie(
+        'session_token', 
+        new_session_token, 
+        httponly=True, 
+        secure=True,
+        samesite='Lax',
+        expires=new_session_expiry
+    )
     response.set_cookie(
         'refresh_token', 
         new_refresh_token, 
