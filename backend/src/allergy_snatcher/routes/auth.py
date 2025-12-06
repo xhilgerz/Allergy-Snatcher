@@ -9,6 +9,17 @@ import os
 
 oauth = OAuth()
 auth_bp = Blueprint('auth', __name__)
+SECURE_COOKIES = os.environ.get('COOKIE_SECURE', 'false').lower() == 'true'
+
+def _utc_now():
+    return datetime.datetime.now(datetime.timezone.utc)
+
+def _ensure_aware(dt: datetime.datetime | None) -> datetime.datetime | None:
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=datetime.timezone.utc)
+    return dt
 
 @auth_bp.route('/auth/register', methods=['POST'])
 def register():
@@ -16,14 +27,24 @@ def register():
     username = data.get('username')
     email = data.get('email')
     password = data.get('password')
+    role = data.get('role', 'user')
+    admin_key = data.get('admin_key')
 
     if not username or not email or not password:
         return jsonify({'error': 'Username, email, and password are required'}), 400
+    
+    if role not in ['user', 'admin']:
+        return jsonify({'error': 'Invalid role'}), 400
+
+    if role == 'admin':
+        expected_key = os.environ.get('ADMIN_REGISTRATION_KEY')
+        if not expected_key or admin_key != expected_key:
+            return jsonify({'error': 'Invalid admin registration key'}), 403
 
     if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
         return jsonify({'error': 'Username or email already exists'}), 400
 
-    new_user = User(username=username, email=email) # pyright: ignore[reportCallIssue]
+    new_user = User(username=username, email=email, role=role) # pyright: ignore[reportCallIssue]
     new_password = Password(password_hash=generate_password_hash(password), user=new_user) # type: ignore
     
     db.session.add(new_user)
@@ -51,8 +72,8 @@ def login():
     refresh_token = secrets.token_hex(32)
     
     # Define expiry times
-    session_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
-    refresh_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30)
+    session_expiry = _utc_now() + datetime.timedelta(hours=1)
+    refresh_expiry = _utc_now() + datetime.timedelta(days=30)
 
     new_session = UserSession(
         user_id=user.id, # type: ignore
@@ -71,7 +92,7 @@ def login():
         'session_token', 
         session_token, 
         httponly=True, 
-        secure=True,
+        secure=SECURE_COOKIES,
         samesite='Lax',
         expires=session_expiry
     )
@@ -79,7 +100,7 @@ def login():
         'refresh_token', 
         refresh_token, 
         httponly=True, 
-        secure=True, # Set to False if not using HTTPS in development
+        secure=SECURE_COOKIES,
         samesite='Lax',
         expires=refresh_expiry
     )
@@ -106,7 +127,8 @@ def _refresh_session(refresh_token: str):
     if not user_session:
         return None, None, None, None
 
-    if user_session.refresh_token_expires_at < datetime.datetime.now(datetime.timezone.utc):
+    refresh_exp = _ensure_aware(user_session.refresh_token_expires_at)
+    if refresh_exp and refresh_exp < _utc_now():
         db.session.delete(user_session)
         db.session.commit()
         return None, None, None, None
@@ -114,8 +136,8 @@ def _refresh_session(refresh_token: str):
     # --- Token Rotation ---
     new_session_token = secrets.token_hex(32)
     new_refresh_token = secrets.token_hex(32)
-    new_session_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
-    new_refresh_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30)
+    new_session_expiry = _utc_now() + datetime.timedelta(hours=1)
+    new_refresh_expiry = _utc_now() + datetime.timedelta(days=30)
 
     user_session.session_token = new_session_token
     user_session.expires_at = new_session_expiry
@@ -141,7 +163,7 @@ def refresh(referrer:str='/'):
         'session_token', 
         new_session_token, 
         httponly=True, 
-        secure=True,
+        secure=SECURE_COOKIES,
         samesite='Lax',
         expires=new_session_expiry
     )
@@ -149,7 +171,7 @@ def refresh(referrer:str='/'):
         'refresh_token', 
         new_refresh_token, 
         httponly=True, 
-        secure=True,
+        secure=SECURE_COOKIES,
         samesite='Lax',
         expires=new_refresh_expiry
     )
@@ -171,7 +193,9 @@ def status():
         user_session = UserSession.query.filter_by(session_token=session_token).first()
 
     # If session is invalid or expired, try to refresh
-    if not user_session or user_session.expires_at < datetime.datetime.now(datetime.timezone.utc):
+    session_exp = _ensure_aware(user_session.expires_at) if user_session else None
+
+    if not user_session or (session_exp and session_exp < _utc_now()):
         refresh_token = request.cookies.get('refresh_token')
         if not refresh_token:
             return jsonify({"logged_in": False, "user": None}), 200
@@ -209,7 +233,7 @@ def status():
             'session_token', 
             new_session_token, 
             httponly=True, 
-            secure=True,
+            secure=SECURE_COOKIES,
             samesite='Lax',
             expires=new_session_expiry
         )
@@ -217,7 +241,7 @@ def status():
             'refresh_token', 
             new_refresh_token, 
             httponly=True, 
-            secure=True,
+            secure=SECURE_COOKIES,
             samesite='Lax',
             expires=new_refresh_expiry
         )
@@ -325,8 +349,8 @@ def oauth_callback(provider):
     refresh_token = secrets.token_hex(32)
     
     # Define expiry times
-    session_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
-    refresh_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=30)
+    session_expiry = _utc_now() + datetime.timedelta(hours=1)
+    refresh_expiry = _utc_now() + datetime.timedelta(days=30)
 
     new_session = UserSession(
         user_id=user.id, # type: ignore
@@ -348,7 +372,7 @@ def oauth_callback(provider):
         'session_token', 
         session_token, 
         httponly=True, 
-        secure=True,
+        secure=SECURE_COOKIES,
         samesite='Lax',
         expires=session_expiry
     )
@@ -356,7 +380,7 @@ def oauth_callback(provider):
         'refresh_token', 
         refresh_token, 
         httponly=True, 
-        secure=True,
+        secure=SECURE_COOKIES,
         samesite='Lax',
         expires=refresh_expiry
     )

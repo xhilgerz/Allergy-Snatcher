@@ -1,7 +1,10 @@
 // src/api/api.js
 
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "";
+const url = (path) => `${API_BASE}${path}`;
+
 export async function getAdminPassword() {
-  const response = await fetch(`/admin/password`);
+  const response = await fetch(url(`/admin/password`), { credentials: "include" });
   if (!response.ok) {
     const message = await response.text();
     throw new Error(`Failed to load admin password: ${message || response.status}`);
@@ -12,11 +15,53 @@ export async function getAdminPassword() {
 }
 
 
+export async function registerUser({ username, email, password, role = "user", admin_key }) {
+  const response = await fetch(url(`/auth/register`), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ username, email, password, role, admin_key }),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || "Registration failed");
+  }
+  return response.json();
+}
+
+export async function login(username, password) {
+  const response = await fetch(url(`/auth/login`), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ username, password }),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || "Invalid credentials");
+  }
+  return response.json();
+}
+
+export async function logout() {
+  await fetch(url(`/logout`), { method: "POST", credentials: "include" });
+}
+
+export async function getAuthStatus() {
+  const response = await fetch(url(`/auth/status`), { credentials: "include" });
+  if (!response.ok) {
+    throw new Error("Failed to fetch auth status");
+  }
+  return response.json();
+}
+
 export async function getFoods() {
   console.log("API_BASE =", process.env.REACT_APP_API_BASE_URL);
 
   try {
-    const response = await fetch(`/api/foods/100/0/True`);
+    const response = await fetch(url(`/api/foods/100/0/True`), {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch foods");
     }
@@ -32,7 +77,9 @@ export async function getFoods() {
 
 export async function getFoodById(foodId) {
   try {
-    const response = await fetch(`/api/foods/${foodId}`);
+    const response = await fetch(url(`/api/foods/${foodId}`), {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`Failed to fetch food ${foodId}`);
     }
@@ -45,7 +92,7 @@ export async function getFoodById(foodId) {
 
 export async function addFood(foodData) {
   try {
-    const response = await fetch(`/api/foods/`, {
+    const response = await fetch(url(`/api/foods/`), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       credentials: "include", 
@@ -77,7 +124,7 @@ export async function addFood(foodData) {
   export async function updateFood(food_id, foodData) {
   try {
 
-    const response = await fetch(`/api/foods/${food_id}`, {
+    const response = await fetch(url(`/api/foods/${food_id}`), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include", 
@@ -102,7 +149,7 @@ export async function addFood(foodData) {
 
 export async function deleteFood(food_id) {
   try {
-    const response = await fetch(`/api/foods/${food_id}`, {
+    const response = await fetch(url(`/api/foods/${food_id}`), {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -128,7 +175,9 @@ export async function getDietRestrictions() {
   console.log("API_BASE =", process.env.REACT_APP_API_BASE_URL);
 
   try {
-    const response = await fetch("/api/diet-restrictions/");
+    const response = await fetch(url("/api/diet-restrictions/"), {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch diet restrictions");
     }
@@ -144,7 +193,7 @@ export async function getDietRestrictions() {
 
 export async function createDietRestriction(restrictionData) {
   try {
-    const response = await fetch(`/api/diet-restrictions/`, {
+    const response = await fetch(url(`/api/diet-restrictions/`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -170,7 +219,7 @@ export async function createDietRestriction(restrictionData) {
 
 export async function deleteDietRestriction(restriction_id) {
   try {
-    const response = await fetch(`/api/diet-restrictions/${restriction_id}`, {
+    const response = await fetch(url(`/api/diet-restrictions/${restriction_id}`), {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -199,7 +248,9 @@ export async function getCuisines() {
   console.log("API_BASE =", process.env.REACT_APP_API_BASE_URL);
 
   try {
-    const response = await fetch("/api/cuisines/");
+    const response = await fetch(url("/api/cuisines/"), {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch cuisines");
     }
@@ -216,7 +267,7 @@ export async function getCuisines() {
 export async function createCuisine(cuisineData){
 
   try {
-    const response = await fetch(`/api/cuisines/`, {
+    const response = await fetch(url(`/api/cuisines/`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include", 
@@ -241,7 +292,7 @@ export async function createCuisine(cuisineData){
 
 export async function deleteCuisine(cuisine_id){
   try {
-    const response = await fetch(`/api/cuisines/${cuisine_id}`, {
+    const response = await fetch(url(`/api/cuisines/${cuisine_id}`), {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -267,7 +318,7 @@ export async function deleteCuisine(cuisine_id){
 export async function createRestriction(restrictionData){
 
   try {
-    const response = await fetch(`/api/cuisines/`, {
+    const response = await fetch(url(`/api/diet-restrictions/`), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include", 
@@ -292,7 +343,7 @@ export async function createRestriction(restrictionData){
 
 export async function deleteRestriction(restriction_id){
   try {
-    const response = await fetch(`/api/cuisines/${restriction_id}`, {
+    const response = await fetch(url(`/api/diet-restrictions/${restriction_id}`), {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

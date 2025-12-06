@@ -1,111 +1,143 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAdminPassword } from "../../../api/api.js";
+import { useAuth } from "../../../context/AuthContext.jsx";
 
 export default function LogIn() {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [isAdminRegister, setIsAdminRegister] = useState(false);
+  const [adminKey, setAdminKey] = useState("");
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [backendPassword, setBackendPassword] = useState("");
-  const [isLoadingPassword, setIsLoadingPassword] = useState(true);
+  const [mode, setMode] = useState("login"); // "login" | "register"
 
+  const { user, loading, login, register } = useAuth();
   const navigate = useNavigate();
 
-  // Check localStorage on load
-  useEffect(() => {
-    const storedValue = localStorage.getItem("isAdminAuthenticated");
-    if (storedValue === "true") {
-      setIsAuthenticated(true);
-      setStatus("You are already logged in.");
-    }
-  }, []);
-
-  // Load the admin password from the backend so it isn't bundled in the frontend
-  useEffect(() => {
-    (async () => {
-      try {
-        const fetchedPassword = await getAdminPassword();
-        setBackendPassword(fetchedPassword || "");
-      } catch (err) {
-        console.error("Unable to fetch admin password from backend", err);
-        setError("Admin password is not configured on the server.");
-      } finally {
-        setIsLoadingPassword(false);
-      }
-    })();
-  }, []);
-
-  // Handle login
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
     setStatus("");
-
-    if (isLoadingPassword) {
-      setStatus("Loading admin settings, please try again.");
-      return;
-    }
-
-    if (!backendPassword) {
-      setError("Admin password is not configured on the server.");
-      return;
-    }
-
-    if (password === backendPassword) {
-      localStorage.setItem("isAdminAuthenticated", "true");
-      setIsAuthenticated(true);
-      setStatus("Success! Choose what you want to do next.");
+    try {
+      if (mode === "login") {
+        await login(username, password);
+        setStatus("Logged in! Choose what you want to do next.");
+      } else {
+        await register({
+          username,
+          email,
+          password,
+          role: isAdminRegister ? "admin" : "user",
+          admin_key: isAdminRegister ? adminKey : undefined,
+        });
+        setStatus(
+          `Registered as ${isAdminRegister ? "admin" : "user"} and logged in! Choose what you want to do next.`
+        );
+      }
+      setUsername("");
       setPassword("");
-    } else {
-      setError("Incorrect password. Please try again.");
+      setEmail("");
+      setAdminKey("");
+    } catch (err) {
+      setError(
+        err.message || (mode === "login" ? "Login failed" : "Registration failed")
+      );
     }
   };
 
-  // Handle logout
-  const handleLogout = () => {
-    localStorage.removeItem("isAdminAuthenticated");
-    setIsAuthenticated(false);
-    setStatus("You have been logged out.");
-  };
+  if (loading) return <p>Checking login…</p>;
 
   return (
     <div className="admin-login">
-      <h1>Admin Log In</h1>
-      <p>Enter the admin password to access moderation tools.</p>
+      <h1>Register / Log In</h1>
 
-      {isAuthenticated ? (
+      {user ? (
         <div className="admin-login__status">
-          <p>{status || "You are logged in."}</p>
+          <p>
+            {status ||
+              `You are logged in as ${user.username} (${user.role}).`}
+          </p>
           <p>Select an option to continue:</p>
 
           <div className="admin-login__actions">
-            <button type="button" onClick={() => navigate("/approve-food")}>
-              Approve Foods
-            </button>
-            <button type="button" onClick={() => navigate("/edit-food")}>
-              Edit Foods
-            </button>
-            <button type="button" onClick={() => navigate("/manage-tags")}>
-              Manage Tags
-            </button>
-            <button type="button" onClick={handleLogout}>
-              Log out
-            </button>
+            {user.role === "admin" ? (
+              <>
+                <button type="button" onClick={() => navigate("/approve-food")}>
+                  Approve Foods
+                </button>
+                <button type="button" onClick={() => navigate("/edit-food")}>
+                  Edit Foods
+                </button>
+                <button type="button" onClick={() => navigate("/manage-tags")}>
+                  Manage Tags
+                </button>
+              </>
+            ) : (
+              <p>You are logged in as a standard user.</p>
+            )}
           </div>
         </div>
       ) : (
         <form className="admin-login__form" onSubmit={handleSubmit}>
+          <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("login");
+                setIsAdminRegister(false);
+                setError("");
+                setStatus("");
+              }}
+              style={{ fontWeight: mode === "login" ? "bold" : "normal" }}
+            >
+              Log In
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("register");
+                setError("");
+                setStatus("");
+              }}
+              style={{ fontWeight: mode === "register" ? "bold" : "normal" }}
+            >
+              Register
+            </button>
+          </div>
+
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            value={username}
+            placeholder="Enter username"
+            onChange={(e) => setUsername(e.target.value)}
+          />
+
           <label htmlFor="adminPassword">Password</label>
           <input
             id="adminPassword"
             type="password"
             value={password}
-            placeholder="Enter admin password"
+            placeholder="Enter password"
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button type="submit">Log In</button>
+          {mode === "register" && (
+            <>
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                placeholder="Enter email"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              
+            </>
+          )}
+
+          <button type="submit">{mode === "login" ? "Log In" : "Register"}</button>
 
           {error && <p className="admin-login__error">{error}</p>}
           {status && !error && (

@@ -50,6 +50,29 @@ button {
   cursor: pointer;
 }
 
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(85, 104, 254, 0.25);
+  background: linear-gradient(135deg, #5f7bff, #5568fe);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 10px 20px rgba(85, 104, 254, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px rgba(85, 104, 254, 0.3);
+  background: linear-gradient(135deg, #4e61f3, #475af0);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 20px rgba(85, 104, 254, 0.22);
+}
+
 /* Navigation */
 .navbar {
   display: flex;

@@ -2,10 +2,12 @@
 import { useEffect, useState } from "react"; // ✅ include useState
 import PendingFoods from "../../../components/pendingFoods.jsx";
 import { getFoods } from "../../../api/api.js"; // fixed relative path
+import { useAuth } from "../../../context/AuthContext.jsx";
 
 
 export default function ApproveFood() {
   const [foods, setFoods] = useState([]);
+  const { user, loading } = useAuth();
 
   const fetchFoods = async () => {
     const data = await getFoods();
@@ -13,8 +15,14 @@ export default function ApproveFood() {
   };
 
   useEffect(() => {
-    fetchFoods();
-  }, []);
+    if (user?.role === "admin") {
+      fetchFoods();
+    }
+  }, [user]);
+
+  if (loading) return <p>Checking login…</p>;
+  if (!user || user.role !== "admin")
+    return <p>Admins only. Please log in with an admin account.</p>;
 
   return (
     <div className="approve-food-container">

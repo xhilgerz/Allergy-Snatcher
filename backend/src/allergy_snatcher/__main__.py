@@ -3,6 +3,8 @@ import os
 from allergy_snatcher.models.database import db
 from allergy_snatcher.routes.auth import init_app as auth_init_app
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash
+from allergy_snatcher.models.database import User, Password
 
 def create_app() -> Flask:
     """Creates and configures the Flask app."""
@@ -114,8 +116,37 @@ def create_app() -> Flask:
 
     with app.app_context():
         db.create_all()
+        _ensure_admin_account(app)
 
     return app
+
+
+def _ensure_admin_account(app: Flask) -> None:
+    """
+    Creates a default admin user if it does not exist.
+    Controlled by environment variables:
+        ADMIN_USERNAME
+        ADMIN_EMAIL
+        ADMIN_PASSWORD
+    If any of these are missing, no action is taken.
+    """
+    admin_username = os.environ.get("ADMIN_USERNAME")
+    admin_email = os.environ.get("ADMIN_EMAIL")
+    admin_password = os.environ.get("ADMIN_PASSWORD")
+
+    if not all([admin_username, admin_email, admin_password]):
+        return
+
+    existing = User.query.filter_by(username=admin_username).first()
+    if existing:
+        return
+
+    password_hash = generate_password_hash(admin_password)
+    admin_user = User(username=admin_username, email=admin_email, role="admin")  # type: ignore
+    admin_pw = Password(password_hash=password_hash, user=admin_user)  # type: ignore
+    db.session.add(admin_user)
+    db.session.add(admin_pw)
+    db.session.commit()
 
 # Create the app instance for Gunicorn to find
 app = create_app()

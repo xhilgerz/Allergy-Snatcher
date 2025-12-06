@@ -186,15 +186,6 @@ export default function FoodForm({
         />
       </label>
 
-      <label>
-        Nutritional Info:
-        <textarea
-          name="nutritional_info"
-          value={formData.nutritional_info}
-          onChange={handleChange}
-        />
-      </label>
-
       {[
         ["total_fats", "Total Fats (g)"],
         ["saturated_fats", "Saturated Fats (g)"],

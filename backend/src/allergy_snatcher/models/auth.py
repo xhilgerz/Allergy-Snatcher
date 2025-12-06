@@ -3,6 +3,16 @@ from flask import request, g, jsonify
 from .database import UserSession, User
 import datetime
 
+def _utc_now():
+    return datetime.datetime.now(datetime.timezone.utc)
+
+def _is_active(expires_at: datetime.datetime | None) -> bool:
+    if not expires_at:
+        return False
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=datetime.timezone.utc)
+    return expires_at > _utc_now()
+
 def require_session(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -16,7 +26,7 @@ def require_session(f):
             return jsonify({"error": "Invalid session token"}), 401
 
         # You might want to check for session expiry here
-        if user_session.expires_at < datetime.datetime.now(datetime.timezone.utc):
+        if not _is_active(user_session.expires_at):
             # Log the user out, or if refresh oauth token is available, try to renew the session token
             return jsonify({"error": "Session expired"}), 401
             
@@ -60,7 +70,7 @@ def optional_session(f):
         if session_token:
             user_session = UserSession.query.filter_by(session_token=session_token).first()
             
-            if user_session and user_session.expires_at > datetime.datetime.now(datetime.timezone.utc):
+            if user_session and _is_active(user_session.expires_at):
                 user = User.query.get(user_session.user_id)
                 if user and user.role != 'disabled':
                     g.user = user
