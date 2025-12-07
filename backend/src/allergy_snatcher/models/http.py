@@ -123,7 +123,7 @@ class CreateIngredientSchema(BaseModel):
     ingredient_name: str
 
 class FoodValidatorModel(BaseModel):
-    @field_validator('dietary_restriction_ids', mode='before')
+    @field_validator('dietary_restriction_ids', mode='before', check_fields=False)
     @classmethod
     def validate_dietary_restriction_ids(cls, v):
         if not v or v == '[]':
@@ -153,14 +153,17 @@ class FoodValidatorModel(BaseModel):
         trans_fats = data.get('trans_fats')
 
         if total_fats is not None:
-            if sat_fats is not None and total_fats < sat_fats:
+            if sat_fats is not None and trans_fats is not None:
+                if total_fats < sat_fats + trans_fats:
+                    raise ValueError("total_fats cannot be less than the sum of sat_fats and trans_fats")
+            elif sat_fats is not None and total_fats < sat_fats:
                 raise ValueError("total_fats cannot be less than sat_fats")
-            if trans_fats is not None and total_fats < trans_fats:
+            elif trans_fats is not None and total_fats < trans_fats:
                 raise ValueError("total_fats cannot be less than trans_fats")
         
         return data
 
-    @field_validator('category_id', mode='before')
+    @field_validator('category_id', mode='before', check_fields=False)
     @classmethod
     def validate_category_id(cls, v):
         if v is None:
@@ -169,7 +172,7 @@ class FoodValidatorModel(BaseModel):
             raise ValueError(f"Invalid category ID: {v}")
         return v
 
-    @field_validator('cuisine_id', mode='before')
+    @field_validator('cuisine_id', mode='before', check_fields=False)
     @classmethod
     def validate_cuisine_id(cls, v):
         if v is None:
