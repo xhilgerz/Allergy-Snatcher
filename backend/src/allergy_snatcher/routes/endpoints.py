@@ -291,6 +291,10 @@ def update_food_by_id(food_id):
 
         data = request.get_json()
         validated_data = UpdateFoodSchema(**data)
+        try:
+            validated_data = UpdateFoodSchema.model_validate(validated_data)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
 
         if validated_data.publication_status:
             if g.User.role == 'admin' and food.publication_status != 'private':
@@ -374,6 +378,11 @@ def create_food():
     try:
         data = request.get_json()
         validated_data = CreateFoodSchema(**data)
+        try:
+            validated_data = CreateFoodSchema.model_validate(validated_data)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
         validated_data.publication_status = 'private'
         new_food = Food(
             name=validated_data.name, # type: ignore
