@@ -29,7 +29,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN useradd --create-home appuser
 WORKDIR /home/appuser/app
 USER appuser
-
+ENV COOKIE_SECURE=False
 # Copy the virtual environment from the builder stage
 COPY --from=builder /opt/venv /opt/venv
 

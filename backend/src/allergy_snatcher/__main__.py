@@ -13,7 +13,7 @@ def create_app() -> Flask:
     base_dir = os.environ.get('APP_HOME', '/home/appuser/app')
     static_dir = os.path.join(base_dir, 'static')
 
-    app = Flask(__name__, static_folder=static_dir, static_url_path='')
+    app = Flask(__name__, static_folder=static_dir, static_url_path='/static')
 
     #CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 

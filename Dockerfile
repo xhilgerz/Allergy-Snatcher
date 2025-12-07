@@ -9,6 +9,7 @@ WORKDIR /app
 COPY ./allergy_app/package*.json ./
 RUN npm install
 COPY ./allergy_app ./
+ENV PUBLIC_URL /static
 RUN npm run build
 
 # ---- Backend Builder Stage ----
@@ -35,6 +36,7 @@ ENV FLASK_DEBUG=false
 RUN useradd --create-home appuser
 USER appuser
 ENV APP_HOME=/home/appuser/app
+ENV COOKIE_SECURE=True
 WORKDIR $APP_HOME
 
 # Copy virtual env and backend code from builder stages
