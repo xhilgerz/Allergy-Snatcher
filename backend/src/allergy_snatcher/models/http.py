@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator, ValidationInfo
 from typing import List, Optional, Literal
 from .database import DietaryRestriction, Category, Cuisine
 
@@ -179,6 +179,18 @@ class FoodValidatorModel(BaseModel):
             return v
         if not Cuisine.query.get(v):
             raise ValueError(f"Invalid cuisine ID: {v}")
+        return v
+    
+    @field_validator(
+        'dietary_fiber', 'sugars', 'protein', 'carbs', 'cal', 
+        'cholesterol', 'sodium', 'trans_fats', 'total_fats', 
+        'sat_fats', 'serving_amt',
+        check_fields=False
+    )
+    @classmethod
+    def validate_non_negative(cls, v: float, info: ValidationInfo):
+        if v is not None and v < 0:
+            raise ValueError(f"{info.field_name} cannot be negative")
         return v
 
 class CreateFoodSchema(FoodValidatorModel):
