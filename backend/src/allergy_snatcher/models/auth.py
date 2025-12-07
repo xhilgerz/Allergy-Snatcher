@@ -43,6 +43,7 @@ def require_session(f):
 
 def require_role(role):
     def decorator(f):
+        @require_session
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if not hasattr(g, 'user') or g.user.role != role:
