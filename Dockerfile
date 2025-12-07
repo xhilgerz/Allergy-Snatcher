@@ -48,4 +48,4 @@ COPY --from=frontend-builder --chown=appuser:appuser /app/build ./static
 # The Flask app is configured to serve files from this 'static' directory.
 
 EXPOSE 5000
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "allergy_snatcher.__main__:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--chdir", "src", "allergy_snatcher.__main__:app"]
