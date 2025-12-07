@@ -524,6 +524,25 @@ def delete_diet_restriction_by_id(restriction_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@routes.route("/api/foods/pending/<int:limit>/<int:offset>/", methods=['GET'])
+@require_role('admin')
+def get_pending_foods(limit:int, offset: int):
+    """
+    HTTP GET
+        Returns a list of foods with 'unlisting' publication status.
+        Requires admin role.
+    """
+    try:
+        pending_foods = Food.query.options(
+            joinedload(Food.category),
+            joinedload(Food.cuisine),
+            joinedload(Food.restriction_associations).joinedload(DietRestrictAssoc.restriction)).filter_by(publication_status='unlisting').limit(limit).offset(offset).all()
+        food_schemas = [FoodSchema.model_validate(f).model_dump(by_alias=True, exclude_none=True, exclude_unset=True, exclude_defaults=True) for f in pending_foods]
+        return jsonify(food_schemas), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
 
 
 def init_app(app):
