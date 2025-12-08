@@ -7,8 +7,10 @@ const Card = ({
   showEditButtons = false,
   onApprove,
   onReject,
+  onDelete,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // detail modal
+  const [confirmAction, setConfirmAction] = useState(null); // "approve" | "reject" | "delete"
 
   const handleEdit = (e) => {
     e.stopPropagation();
@@ -18,18 +20,35 @@ const Card = ({
     window.location.href = `/edit-food/${food.id}`;
   };
 
-  const handleApprove = async (e) => {
+  const requestApprove = (e) => {
     e.stopPropagation();
-    const payload = { ...food, publication_status: "public" };
-    await updateFood(food.id, payload);
-    onApprove?.();
+    setConfirmAction("approve");
   };
 
-  const handleReject = async (e) => {
+  const requestReject = (e) => {
     e.stopPropagation();
-    await deleteFood(food.id, food);
-    onReject?.();
+    setConfirmAction("reject");
   };
+
+  const requestDelete = (e) => {
+    e.stopPropagation();
+    setConfirmAction("delete");
+  };
+
+  const runConfirmedAction = async () => {
+    if (confirmAction === "approve") {
+      const payload = { ...food, publication_status: "public" };
+      await updateFood(food.id, payload, { force: true });
+      onApprove?.();
+    } else if (confirmAction === "reject" || confirmAction === "delete") {
+      await deleteFood(food.id, true);
+      onReject?.();
+      onDelete?.();
+    }
+    setConfirmAction(null);
+  };
+
+  
 
   return (
     <>
@@ -40,10 +59,10 @@ const Card = ({
 
       {showApproveButton && (
         <div className="button-group">
-          <button onClick={handleApprove} className="approve-btn">
+          <button onClick={requestApprove} className="approve-btn">
             Approve
           </button>
-          <button onClick={handleReject} className="reject-btn">
+          <button onClick={requestReject} className="reject-btn">
             Reject
           </button>
         </div>
@@ -52,6 +71,9 @@ const Card = ({
         <div className="button-group">
           <button onClick={handleEdit} className="edit-btn">
             Edit
+          </button>
+          <button onClick={requestDelete} className="reject-btn">
+            Delete
           </button>
         </div>
       )}
@@ -124,16 +146,15 @@ const Card = ({
             {[
               ["Calories", food.cal],
               ["Protein (g)", food.protein],
-              ["Carbs (g)", food.carbs],
+              ["Total Carbohydrates (g)", food.carbs],
               ["Total Fats (g)", food.total_fats],
               ["Saturated Fats (g)", food.sat_fats ?? food.saturated_fats],
               ["Trans Fats (g)", food.trans_fats],
               ["Cholesterol (mg)", food.cholesterol],
               ["Sodium (mg)", food.sodium],
-              ["Total Carbohydrates (g)", food.total_carbohydrates],
               ["Dietary Fiber (g)", food.dietary_fiber],
               ["Total Sugars (g)", food.sugars ?? food.total_sugars],
-              ["Added Sugars (g)", food.added_sugars],
+              ,
             ].map(([label, value]) => (
               <p key={label}>
                 <strong>{label}:</strong> {value ?? "N/A"}
@@ -145,6 +166,51 @@ const Card = ({
               <strong>Notes:</strong> {food.nutritional_info}
             </p>
           )}
+        </div>
+      </div>
+    )}
+    {confirmAction && (
+      <div
+        className="confirm-modal__backdrop"
+        onClick={() => setConfirmAction(null)}
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1100,
+        }}
+      >
+        <div
+          className="confirm-modal__dialog"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            background: "#fff",
+            padding: "1.25rem",
+            borderRadius: "8px",
+            maxWidth: "360px",
+            width: "90%",
+            color: "#333",
+          }}
+        >
+          <p style={{ marginBottom: "1rem" }}>
+            {confirmAction === "approve" && "Approve this food and publish it?"}
+            {confirmAction === "reject" && "Reject this food and delete it?"}
+            {confirmAction === "delete" && "Delete this food?"}
+          </p>
+          <div
+            className="button-group"
+            style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}
+          >
+            <button onClick={runConfirmedAction} className="approve-btn">
+              Yes
+            </button>
+            <button onClick={() => setConfirmAction(null)} className="reject-btn">
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     )}

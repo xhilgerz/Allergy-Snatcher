@@ -289,20 +289,15 @@ def update_food_by_id(food_id):
     validated_data = UpdateFoodSchema(**data)
 
     if validated_data.publication_status:
-        if g.user.role == 'admin' and food.publication_status != 'private':
-            if food.publication_status == 'unlisting':
-                food.publication_status = validated_data.publication_status
-            elif food.publication_status == 'public':
-                food.publication_status = validated_data.publication_status
+            if g.user.role == 'admin':
+                if request.headers.get('confirmation') != 'force':
+                    return jsonify({"error": "Confirmation required to modify public/other users' data"}), 400
+                if food.publication_status == 'private':
+                    food.publication_status = validated_data.publication_status
+                else:
+                    return jsonify({"error": "Forbidden"}), 403
             else:
                 return jsonify({"error": "Forbidden"}), 403
-        elif food.publication_status == 'private' and g.user.id == food.user_id:
-            if validated_data.publication_status == 'public':
-                return jsonify({"error": "Forbidden"}), 403
-            else:
-                food.publication_status = validated_data.publication_status
-        else:
-            return jsonify({"error": "Forbidden"}), 403
 
     for field, value in validated_data.model_dump(exclude_unset=True).items():
         if field == 'ingredients':

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
-import { getCuisines, getDietRestrictions } from "../api/api.js";
+import { getCuisines, getDietRestrictions, getCategories } from "../api/api.js";
 
 const defaultValues = {
   name: "",
@@ -12,14 +12,14 @@ const defaultValues = {
   trans_fats: "",
   cholesterol: "",
   sodium: "",
-  total_carbohydrates: "",
   dietary_fiber: "",
   total_sugars: "",
-  added_sugars: "",
   calories: "",
   protein: "",
   carbs: "",
   cuisine: null,
+  serving_amt: "",
+  serving_unit: "",
   category_id: 1,
   restrictions: [],
   publication_status: "private",
@@ -37,6 +37,7 @@ export default function FoodForm({
   const [restrictionOptions, setRestrictionOptions] = useState([]);
   const [cuisineOptions, setCuisineOptions] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState([]);
 
   const normalizedInitialValues = useMemo(() => {
     const source = initialValues ?? {};
@@ -99,6 +100,17 @@ export default function FoodForm({
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const list = await getCategories();
+        setCategoryOptions(list.map((c) => ({ value: c.id, label: c.category })));
+      } catch (err) {
+        console.error("Failed to load categories", err);
+      }
+    })();
+  }, []);
+
   const handleChange = (event) => {
     const { name, value, type } = event.target;
     setFormData((prev) => ({
@@ -128,6 +140,15 @@ export default function FoodForm({
     }
 
     setIsSubmitting(true);
+    // Resolve cuisine ID: if the form value is an id, use it; if it's a string label, match to options.
+    let cuisineId = formData.cuisine;
+    if (typeof cuisineId === "string" && cuisineId.trim().length > 0) {
+      const match = cuisineOptions.find(
+        (opt) => opt.label.toLowerCase() === cuisineId.trim().toLowerCase()
+      );
+      cuisineId = match ? match.value : null;
+    }
+
     const payload = {
       name: formData.name,
       brand: formData.brand,
@@ -146,9 +167,12 @@ export default function FoodForm({
       dietary_fiber:
         formData.dietary_fiber === "" ? null : Number(formData.dietary_fiber),
       sugars: formData.total_sugars === "" ? null : Number(formData.total_sugars),
+      added_sugars: formData.added_sugars === "" ? null : Number(formData.added_sugars),
       cal: formData.calories === "" ? null : Number(formData.calories),
+      serving_amt: formData.serving_amt === "" ? null : Number(formData.serving_amt),
+      serving_unit: formData.serving_unit || null,
       category_id: formData.category_id,
-      cuisine_id: formData.cuisine,
+      cuisine_id: cuisineId,
       ingredients: formData.ingredients
         ? formData.ingredients
             .split(",")
@@ -188,17 +212,16 @@ export default function FoodForm({
 
       {[
         ["total_fats", "Total Fats (g)"],
-        ["saturated_fats", "Saturated Fats (g)"],
-        ["trans_fats", "Trans Fats (g)"],
-        ["cholesterol", "Cholesterol (mg)"],
-        ["sodium", "Sodium (mg)"],
-        ["total_carbohydrates", "Total Carbohydrates (g)"],
-        ["dietary_fiber", "Dietary Fiber (g)"],
-        ["total_sugars", "Total Sugars (g)"],
-        ["added_sugars", "Added Sugars (g)"],
-        ["calories", "Calories"],
-        ["protein", "Protein (g)"],
-        ["carbs", "Carbs (g)"],
+      ["saturated_fats", "Saturated Fats (g)"],
+      ["trans_fats", "Trans Fats (g)"],
+      ["cholesterol", "Cholesterol (mg)"],
+      ["sodium", "Sodium (mg)"],
+      ["carbs", "Total Carbohydrates (g)"],
+      ["dietary_fiber", "Dietary Fiber (g)"],
+      ["total_sugars", "Total Sugars (g)"],
+      ["added_sugars", "Added Sugars (g)"],
+      ["calories", "Calories"],
+      ["protein", "Protein (g)"],
       ].map(([name, label]) => (
         <label key={name}>
           {label}
@@ -223,6 +246,51 @@ export default function FoodForm({
           onChange={handleCuisineChange}
           placeholder="Select a cuisine..."
         />
+      </label>
+
+      <label>
+        Category:
+        <Select
+          name="category"
+          options={categoryOptions}
+          value={
+            categoryOptions.find((option) => option.value === formData.category_id) ||
+            null
+          }
+          onChange={(selected) =>
+            setFormData((prev) => ({ ...prev, category_id: selected ? selected.value : null }))
+          }
+          placeholder="Select a category..."
+        />
+      </label>
+
+      <label>
+        Serving Amount:
+        <input
+          type="number"
+          name="serving_amt"
+          value={formData.serving_amt}
+          onChange={handleChange}
+          min="0"
+        />
+      </label>
+      <label>
+        Serving Unit:
+        <select
+          name="serving_unit"
+          value={formData.serving_unit}
+          onChange={handleChange}
+        >
+          <option value="">Select unit</option>
+          <option value="g">g</option>
+          <option value="mg">mg</option>
+          <option value="oz">oz</option>
+          <option value="lb">lb</option>
+          <option value="tsp">tsp</option>
+          <option value="tbsp">tbsp</option>
+          <option value="cup">cup</option>
+          <option value="item">item</option>
+        </select>
       </label>
 
       <label>

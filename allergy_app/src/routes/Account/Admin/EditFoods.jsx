@@ -6,11 +6,14 @@ import { getFoods } from "../../../api/api.js";
 export default function EditFood() {
   const [foods, setFoods] = useState([]);
 
+  const fetchFoods = async () => {
+    const data = await getFoods();
+    setFoods(data);
+  };
+
   // Fetch foods from backend
   useEffect(() => {
-    getFoods().then((data) => {
-      setFoods(data);
-    });
+    fetchFoods();
   }, []);
 
   // Filter only published foods
@@ -43,6 +46,7 @@ export default function EditFood() {
               }}
               showEditButtons={true}
               onApprove={() => handleApprove(food.id)}
+              onDelete={fetchFoods}
             />
           ))
         ) : (

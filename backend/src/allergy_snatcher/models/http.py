@@ -102,6 +102,7 @@ class FoodSchema(BaseModel):
     trans_fats: Optional[float] = None
     total_fats: Optional[float] = None
     sat_fats: Optional[float] = None
+#    added_sugars: Optional[float] = None
     serving_amt: Optional[float] = None
     serving_unit: Optional[str] = None
     category: CategorySchema
@@ -182,8 +183,8 @@ class FoodValidatorModel(BaseModel):
         return v
     
     @field_validator(
-        'dietary_fiber', 'sugars', 'protein', 'carbs', 'cal', 
-        'cholesterol', 'sodium', 'trans_fats', 'total_fats', 
+        'dietary_fiber', 'sugars', 'protein', 'carbs', 'cal',
+        'cholesterol', 'sodium', 'trans_fats', 'total_fats',
         'sat_fats', 'serving_amt',
         check_fields=False
     )

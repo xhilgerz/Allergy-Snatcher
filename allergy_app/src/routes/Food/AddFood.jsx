@@ -7,9 +7,14 @@ export default function AddFood() {
   const navigate = useNavigate();
 
   const handleCreate = async (payload) => {
-    await addFood(payload);
-    alert("Food added successfully!");
-    navigate("/");
+    try {
+      await addFood(payload);
+      alert("Food added successfully!");
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to add food:", error);
+      // Error toast is emitted in api.js; just stop navigation on failure.
+    }
   };
 
   return (

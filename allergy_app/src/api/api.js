@@ -1,7 +1,32 @@
 // src/api/api.js
+import { emitError } from "../utils/errorBus";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "";
 const url = (path) => `${API_BASE}${path}`;
+
+async function handleResponse(response, defaultMsg = "Request failed") {
+  const text = await response.text();
+  let message = defaultMsg;
+  try {
+    const parsed = text ? JSON.parse(text) : {};
+    if (response.ok) return parsed;
+    message = parsed.error || parsed.message || message;
+  } catch {
+    if (response.ok) return text || null;
+    message = text || message;
+  }
+  const err = new Error(message);
+  err._emitted = true; // mark so we don't emit twice downstream
+  emitError(message);
+  throw err;
+}
+
+function handleError(error, fallback = "Request failed") {
+  if (!error?._emitted) {
+    emitError(error?.message || fallback);
+  }
+  throw error;
+}
 
 export async function getAdminPassword() {
   const response = await fetch(url(`/admin/password`), { credentials: "include" });
@@ -22,11 +47,7 @@ export async function registerUser({ username, email, password, role = "user", a
     credentials: "include",
     body: JSON.stringify({ username, email, password, role, admin_key }),
   });
-  if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || "Registration failed");
-  }
-  return response.json();
+  return handleResponse(response, "Registration failed");
 }
 
 export async function login(username, password) {
@@ -36,11 +57,7 @@ export async function login(username, password) {
     credentials: "include",
     body: JSON.stringify({ username, password }),
   });
-  if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || "Invalid credentials");
-  }
-  return response.json();
+  return handleResponse(response, "Invalid credentials");
 }
 
 export async function logout() {
@@ -62,15 +79,12 @@ export async function getFoods() {
     const response = await fetch(url(`/api/foods/100/0/True`), {
       credentials: "include",
     });
-    if (!response.ok) {
-      throw new Error("Failed to fetch foods");
-    }
-    const data = await response.json();
+    const data = await handleResponse(response, "Failed to fetch foods");
     console.log(" Data fetched from Flask:", data); 
     return data;
   } catch (error) {
     console.error("Error fetching foods:", error);
-    throw error;
+    return handleError(error, "Failed to fetch foods");
   }
 
 }
@@ -80,13 +94,10 @@ export async function getFoodById(foodId) {
     const response = await fetch(url(`/api/foods/${foodId}`), {
       credentials: "include",
     });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch food ${foodId}`);
-    }
-    return await response.json();
+    return await handleResponse(response, `Failed to fetch food ${foodId}`);
   } catch (error) {
     console.error("Error fetching food:", error);
-    throw error;
+    return handleError(error, `Failed to fetch food ${foodId}`);
   }
 }
 
@@ -99,75 +110,53 @@ export async function addFood(foodData) {
       body: JSON.stringify(foodData),
     });
 
-    const text = await response.text();
-    console.log("Backend response:", response.status, text);
-
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = text;
-    }
-
-    if (!response.ok) {
-      throw new Error("Failed to add food");
-    }
-
+    const data = await handleResponse(response, "Failed to add food");
+    console.log("Backend response:", response.status, data);
     return data;
   } catch (error) {
     console.error("Error adding food:", error);
-    throw error;
+    return handleError(error, "Failed to add food");
   }
 }
 
-  export async function updateFood(food_id, foodData) {
+  export async function updateFood(food_id, foodData,{ force = false } = {}) {
   try {
+  const headers = { "Content-Type": "application/json" };
+    if (force) headers.confirmation = "force";
 
     const response = await fetch(url(`/api/foods/${food_id}`), {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers,
       credentials: "include", 
       body: JSON.stringify(foodData),
     });
 
-    // Handle response errors
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error("Backend error:", errText);
-      throw new Error(`Failed to update food (status ${response.status})`);
-    }
-
-    const updatedFood = await response.json();
+    const updatedFood = await handleResponse(response, `Failed to update food (status ${response.status})`);
     console.log("Updated food:", updatedFood);
     return updatedFood;
   } catch (error) {
     console.error("Error updating food:", error);
-    throw error;
+    return handleError(error, "Failed to update food");
   }
 }
 
-export async function deleteFood(food_id) {
+export async function deleteFood(food_id, force = false) {
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (force) headers.confirmation = "force";
+    
     const response = await fetch(url(`/api/foods/${food_id}`), {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers,
       credentials: "include",
     });
 
-    // Handle response errors
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error("Backend error:", errText);
-      throw new Error(`Failed to delete food (status ${response.status})`);
-    }
-
-    const deletedFood = await response.json();
+    const deletedFood = await handleResponse(response, `Failed to delete food (status ${response.status})`);
     console.log("Deleted food:", deletedFood);
     return deletedFood;
   } catch (error) {
     console.error("Error deleting food:", error);
-    throw error;
+    return handleError(error, "Failed to delete food");
   }
 }
 
@@ -178,15 +167,12 @@ export async function getDietRestrictions() {
     const response = await fetch(url("/api/diet-restrictions/"), {
       credentials: "include",
     });
-    if (!response.ok) {
-      throw new Error("Failed to fetch diet restrictions");
-    }
-    const data = await response.json();
+    const data = await handleResponse(response, "Failed to fetch diet restrictions");
     console.log(" Data fetched from Flask:", data); 
     return data;
   } catch (error) {
     console.error("Error fetching foods:", error);
-    throw error;
+    return handleError(error, "Failed to fetch diet restrictions");
   }
 
 }
@@ -213,7 +199,7 @@ export async function createDietRestriction(restrictionData) {
     return restriction;
   } catch (error) {
     console.error("Error creating restriction:", error);
-    throw error;
+    return handleError(error, "Failed to create diet restriction");
   }
 }
 
@@ -238,7 +224,19 @@ export async function deleteDietRestriction(restriction_id) {
     return result;
   } catch (error) {
     console.error("Error deleting restriction:", error);
-    throw error;
+    return handleError(error, "Failed to delete diet restriction");
+  }
+}
+
+export async function getCategories() {
+  try {
+    const response = await fetch(url("/api/categories/"), {
+      credentials: "include",
+    });
+    return await handleResponse(response, "Failed to fetch categories");
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return handleError(error, "Failed to fetch categories");
   }
 }
 

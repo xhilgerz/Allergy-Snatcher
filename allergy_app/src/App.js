@@ -10,6 +10,7 @@ import EditFoodDetails from "./components/editFoodDetails.jsx";
 import Admin from "./routes/Account/Admin/LogIn.jsx";
 import ManageTags from "./routes/Account/Admin/ManageTags.jsx";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
+import ErrorToast from "./components/ErrorToast.jsx";
 
 function Nav() {
   const { user, loading, logout } = useAuth();
@@ -35,6 +36,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <ErrorToast />
         <Nav />
 
         <Routes>

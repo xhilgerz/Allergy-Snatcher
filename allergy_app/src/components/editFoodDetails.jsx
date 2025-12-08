@@ -46,7 +46,7 @@ export default function EditFoodDetails() {
     if (!window.confirm("Are you sure you want to delete this food item?")) {
       return;
     }
-    await deleteFood(foodId);
+    await deleteFood(foodId,true);
     alert("Food deleted successfully!");
     navigate("/edit-food");
   };
