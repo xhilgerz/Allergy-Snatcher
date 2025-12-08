@@ -10,10 +10,24 @@ async function handleResponse(response, defaultMsg = "Request failed") {
   try {
     const parsed = text ? JSON.parse(text) : {};
     if (response.ok) return parsed;
-    message = parsed.error || parsed.message || message;
+
+    let detailText = "";
+    if (Array.isArray(parsed.detail)) {
+      detailText = parsed.detail
+        .map((d) => d.msg || d.error || JSON.stringify(d))
+        .join("; ");
+    } else if (parsed.detail) {
+      detailText = typeof parsed.detail === "string" ? parsed.detail : JSON.stringify(parsed.detail);
+    }
+
+    const primary = parsed.error || parsed.message || defaultMsg;
+    message = detailText ? `${primary}: ${detailText}` : primary;
   } catch {
     if (response.ok) return text || null;
     message = text || message;
+  }
+  if (!response.ok && (!message || message === defaultMsg)) {
+    message = `${defaultMsg} (status ${response.status}${response.statusText ? `: ${response.statusText}` : ""})`;
   }
   const err = new Error(message);
   err._emitted = true; // mark so we don't emit twice downstream
