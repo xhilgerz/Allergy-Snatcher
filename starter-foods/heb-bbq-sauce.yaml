@@ -1,0 +1,35 @@
+name: H-E-B Original BBQ Sauce
+brand: H-E-B
+ingredients:
+  - Tomato Puree
+  - High Fructose Corn Syrup
+  - Vinegar
+  - Molasses
+  - Salt
+  - Spices
+  - Onion Powder
+  - Garlic Powder
+  - Natural Smoke Flavor
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 290
+  carbohydrates: 17
+  dietary_fiber: 0
+  total_sugars: 15
+  added_sugars: 14
+  protein: 0
+servings:
+  size: 2
+  calories: 50
+  unit: tbsp
+category: condiments
+cuisine: american
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy

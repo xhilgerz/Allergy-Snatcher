@@ -1,0 +1,28 @@
+name: Cafe Olé by H-E-B Taste of San Antonio Medium Roast Coffee
+brand: Cafe Olé by H-E-B
+ingredients:
+  - Arabica Coffee Beans
+  - Natural and Artificial Flavors
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 0
+  carbohydrates: 0
+  dietary_fiber: 0
+  total_sugars: 0
+  added_sugars: 0
+  protein: 0
+servings:
+  size: 2
+  calories: 0
+  unit: tbsp
+category: beverages
+cuisine: null
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy

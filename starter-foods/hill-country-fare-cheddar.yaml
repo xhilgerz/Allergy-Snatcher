@@ -1,0 +1,31 @@
+name: Hill Country Fare Shredded Mild Cheddar Cheese
+brand: Hill Country Fare
+ingredients:
+  - Pasteurized Milk
+  - Cheese Culture
+  - Salt
+  - Enzymes
+  - Annatto (for color)
+  - Potato Starch and Powdered Cellulose (to prevent caking)
+nutrition:
+  fats:
+    total: 9
+    saturated: 6
+    trans: 0
+  cholesterol: 30
+  sodium: 180
+  carbohydrates: 1
+  dietary_fiber: 0
+  total_sugars: 0
+  added_sugars: 0
+  protein: 7
+servings:
+  size: 0.25
+  unit: cup
+  calories: 110
+category: dairy
+cuisine: american
+dietary_restrictions:
+  - Lactose
+  - Gluten
+  - Nuts

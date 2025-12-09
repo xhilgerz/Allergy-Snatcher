@@ -1,0 +1,25 @@
+name: Magma Crisps
+brand: Vulcan Snacks
+ingredients:
+  - Obsidian Flakes
+  - Sulfur Salt
+  - Lava Essence (Flavoring)
+nutrition:
+  fats:
+    total: 15
+    saturated: 2
+    trans: 0
+  cholesterol: 0
+  sodium: 450
+  carbohydrates: 25
+  dietary_fiber: 1
+  total_sugars: 0
+  added_sugars: 0
+  protein: 2
+servings:
+  size: 28
+  unit: g
+category: Snack
+cuisine: Volcanic
+dietary_restrictions:
+  - Spicy

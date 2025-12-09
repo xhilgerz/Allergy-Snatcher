@@ -1,0 +1,27 @@
+name: H-E-B Frozen Broccoli Florets
+brand: H-E-B
+ingredients:
+  - Broccoli
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 20
+  carbohydrates: 4
+  dietary_fiber: 2
+  total_sugars: 2
+  added_sugars: 0
+  protein: 2
+servings:
+  size: 1
+  calories: 25
+  unit: cup
+category: frozen
+cuisine: null
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy

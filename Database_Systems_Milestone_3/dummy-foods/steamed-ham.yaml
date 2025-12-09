@@ -1,0 +1,27 @@
+name: Steamed Hams
+brand: Krusty Burger
+ingredients:
+  - 100% Beef Patty
+  - Bun
+  - Lettuce
+  - Special Sauce
+nutrition:
+  fats:
+    total: 25
+    saturated: 10
+    trans: 1.5
+  cholesterol: 80
+  sodium: 980
+  carbohydrates: 40
+  dietary_fiber: 2
+  total_sugars: 7
+  added_sugars: 4
+  protein: 22
+servings:
+  size: 1
+  unit: item
+category: Fast Food
+cuisine: American
+dietary_restrictions:
+  - Contains Gluten
+  - Contains Beef

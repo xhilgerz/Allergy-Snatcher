@@ -1,0 +1,26 @@
+name: H-E-B Wild Caught Cod Fillets
+brand: H-E-B
+ingredients:
+  - Cod
+nutrition:
+  fats:
+    total: 1
+    saturated: 0
+    trans: 0
+  cholesterol: 60
+  sodium: 80
+  carbohydrates: 0
+  dietary_fiber: 0
+  total_sugars: 0
+  added_sugars: 0
+  protein: 26
+servings:
+  size: 4
+  unit: oz
+  calories: 80
+category: fish
+cuisine: null
+dietary_restrictions:
+  - Gluten
+  - Nuts
+  - Dairy

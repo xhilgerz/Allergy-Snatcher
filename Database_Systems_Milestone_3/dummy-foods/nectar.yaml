@@ -1,0 +1,26 @@
+name: Glimmerwing Nectar
+brand: Feywild Botanicals
+ingredients:
+  - Dewdrops
+  - Liquefied Moonlight
+  - Crushed Pixie Petals
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 5
+  carbohydrates: 8
+  dietary_fiber: 0
+  total_sugars: 8
+  added_sugars: 0
+  protein: 0
+servings:
+  size: 8
+  unit: oz
+category: Beverage
+cuisine: Elven
+dietary_restrictions:
+  - Gluten-Free
+  - Vegan

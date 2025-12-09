@@ -1,0 +1,26 @@
+name: Mecha-Munch Nuts & Bolts Mix
+brand: Roboto Snacks
+ingredients:
+  - Titanium-Salted Peanuts
+  - Cashew "Gears"
+  - Almond "Sprockets"
+  - Lubricant (Oil)
+nutrition:
+  fats:
+    total: 22
+    saturated: 3.5
+    trans: 0
+  cholesterol: 0
+  sodium: 180
+  carbohydrates: 10
+  dietary_fiber: 4
+  total_sugars: 2
+  added_sugars: 0
+  protein: 9
+servings:
+  size: 40
+  unit: g
+category: Snack Mix
+cuisine: Robotic
+dietary_restrictions:
+  - Contains Nuts

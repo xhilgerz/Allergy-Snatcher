@@ -1,0 +1,31 @@
+name: H-E-B Organics Diced Tomatoes
+brand: H-E-B Organics
+ingredients:
+  - Organic Tomatoes
+  - Organic Tomato Juice
+  - Sea Salt
+  - Calcium Chloride
+  - Citric Acid
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 240
+  carbohydrates: 5
+  dietary_fiber: 1
+  total_sugars: 3
+  added_sugars: 0
+  protein: 1
+servings:
+  size: 0.5
+  unit: cup
+  calories: 25
+category: canned goods
+cuisine: null
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy

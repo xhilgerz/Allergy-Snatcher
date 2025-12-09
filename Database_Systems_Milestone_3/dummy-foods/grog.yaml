@@ -1,0 +1,26 @@
+name: Grog (Canned)
+brand: Pirate's Choice
+ingredients:
+  - Grog Base (Water, "Rum" Flavor)
+  - High Fructose Corn Syrup
+  - Lime Juice Concentrate
+  - \"Scurvy-Preventing" Vitamin C
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 15
+  carbohydrates: 40
+  dietary_fiber: 0
+  total_sugars: 39
+  added_sugars: 39
+  protein: 0
+servings:
+  size: 12
+  unit: oz
+category: Beverage
+cuisine: Pirate
+dietary_restrictions:
+  - Non-Alcoholic

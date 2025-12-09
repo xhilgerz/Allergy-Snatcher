@@ -26,3 +26,8 @@ yarn-error.log*
 /allergy_app/node_modules
 *.pyc
 
+output.sql
+
+# front end
+/allergy_app/.env
+be.env

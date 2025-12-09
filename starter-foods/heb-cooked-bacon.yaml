@@ -1,0 +1,33 @@
+name: H-E-B Fully Cooked Bacon
+brand: H-E-B
+ingredients:
+  - Pork
+  - Water
+  - Salt
+  - Sugar
+  - Sodium Phosphate
+  - Sodium Erythorbate
+  - Sodium Nitrite
+nutrition:
+  fats:
+    total: 6
+    saturated: 2
+    trans: 0
+  cholesterol: 15
+  sodium: 230
+  carbohydrates: 0
+  dietary_fiber: 0
+  total_sugars: 0
+  added_sugars: 0
+  protein: 5
+servings:
+  size: 2
+  unit: item
+  calories: 60
+category: meat
+cuisine: american
+dietary_restrictions:
+  - Pork
+  - Gluten
+  - Nuts
+  - Dairy

@@ -1,0 +1,26 @@
+name: Cyber-Coated Energy Bar
+brand: NeoCorp Dynamics
+ingredients:
+  - Protein Isolate
+  - Nano-Oats
+  - Synthetic Honey
+  - Chromium Drizzle
+nutrition:
+  fats:
+    total: 12
+    saturated: 4
+    trans: 0
+  cholesterol: 10
+  sodium: 100
+  carbohydrates: 25
+  dietary_fiber: 5
+  total_sugars: 10
+  added_sugars: 8
+  protein: 20
+servings:
+  size: 60
+  unit: g
+category: Snack Bar
+cuisine: Cyberpunk
+dietary_restrictions:
+  - High-Protein

@@ -29,15 +29,11 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN useradd --create-home appuser
 WORKDIR /home/appuser/app
 USER appuser
-
+ENV COOKIE_SECURE=False
 # Copy the virtual environment from the builder stage
 COPY --from=builder /opt/venv /opt/venv
 
 # Copy your application code
 COPY --chown=appuser:appuser ./ .
 
-# Expose the port your application runs on (5000 as per docker-compose)
-EXPOSE 5000
-
-# Command to run your application
-CMD ["python", "-m", "allergy_snatcher"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "allergy_snatcher:main"]

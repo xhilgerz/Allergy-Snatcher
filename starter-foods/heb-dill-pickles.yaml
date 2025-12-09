@@ -1,0 +1,33 @@
+name: H-E-B Dill Pickles
+brand: H-E-B
+ingredients:
+  - Cucumbers
+  - Water
+  - Vinegar
+  - Salt
+  - Garlic
+  - Dill
+  - Calcium Chloride
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 280
+  carbohydrates: 1
+  dietary_fiber: 0
+  total_sugars: 1
+  added_sugars: 0
+  protein: 0
+servings:
+  size: 1
+  unit: oz
+  calories: 5
+category: pantry
+cuisine: american
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy

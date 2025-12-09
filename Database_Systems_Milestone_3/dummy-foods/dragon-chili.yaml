@@ -1,0 +1,28 @@
+name: Dragon's Breath Chili (Canned)
+brand: Wyvern Kitchen
+ingredients:
+  - Ground Beef
+  - Kidney Beans
+  - Tomato Puree
+  - Ghost Peppers
+  - Onion
+  - Spices
+nutrition:
+  fats:
+    total: 18
+    saturated: 7
+    trans: 1
+  cholesterol: 50
+  sodium: 950
+  carbohydrates: 25
+  dietary_fiber: 8
+  total_sugars: 6
+  added_sugars: 2
+  protein: 20
+servings:
+  size: 1
+  unit: cup
+category: Canned Goods
+cuisine: American
+dietary_restrictions:
+  - Extremely Spicy

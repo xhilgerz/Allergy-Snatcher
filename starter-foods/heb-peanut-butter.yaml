@@ -1,0 +1,28 @@
+name: H-E-B Natural Creamy Peanut Butter
+brand: H-E-B
+ingredients:
+  - Peanuts
+  - Salt
+nutrition:
+  fats:
+    total: 16
+    saturated: 3
+    trans: 0
+  cholesterol: 0
+  sodium: 125
+  carbohydrates: 7
+  dietary_fiber: 3
+  total_sugars: 2
+  added_sugars: 0
+  protein: 7
+servings:
+  size: 2
+  unit: tbsp
+  calories: 190
+category: pantry
+cuisine: american
+dietary_restrictions:
+  - Nuts
+  - Vegan
+  - Gluten
+  - Dairy

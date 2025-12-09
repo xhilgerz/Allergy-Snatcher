@@ -1,0 +1,29 @@
+name: MRE - Chili Mac
+brand: US Gov't Surplus
+ingredients:
+  - Cooked Pasta
+  - Beef Crumbles
+  - Tomato Sauce
+  - Kidney Beans
+  - Cheese Sauce
+  - Modified Food Starch
+nutrition:
+  fats:
+    total: 20
+    saturated: 8
+    trans: 1
+  cholesterol: 55
+  sodium: 1100
+  carbohydrates: 45
+  dietary_fiber: 6
+  total_sugars: 8
+  added_sugars: 3
+  protein: 18
+servings:
+  size: 227
+  unit: g
+category: Shelf-Stable Meal
+cuisine: Military
+dietary_restrictions:
+  - Contains Dairy
+  - Contains Gluten

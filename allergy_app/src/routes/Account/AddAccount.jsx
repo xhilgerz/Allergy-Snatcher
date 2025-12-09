@@ -1,0 +1,1 @@
+// Allows users to create accounts with the website

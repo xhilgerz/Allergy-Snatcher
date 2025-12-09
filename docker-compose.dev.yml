@@ -5,55 +5,71 @@ services:
       context: ./allergy_app
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-    volumes:
-      - ./frontend:/usr/share/nginx/html
+      - "3000:3000"
     depends_on:
       - backend
-    # develop:
-    #   watch:
-    #     - path: allergy_app:prod
-    #       action: sync
-    #       # target: ## todo: add internal container dir to sync
-    #     - path: ./frontend
-    #       action: sync
-    #       # target: ## todo: add internal container dir to sync
+    volumes:
+      - ./allergy_app:/app
+      - /app/node_modules
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    environment:
+      - REACT_APP_API_BASE_URL=http://localhost:5001
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    environment:
+      DB_USER: myuser
+      DB_PASSWORD: mypassword
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: mydatabase
+      SECRET_KEY: secret
+      ADMIN_REGISTRATION_KEY: password
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    env_file:
+      - be.env
+     
     ports:
-      - "5000:5000"
-    develop:
-      watch:
-        - path: ./backend/src/
-          target: "/home/appuser/app/src/"
-          action: rebuild
-        - path: ./backend/pyproject.toml
-          target: "/home/appuser/app/pyproject.toml"
-          action: rebuild
-        - path: ./backend/requirements.txt
-          target: "/home/appuser/app/requirements.txt"
-          action: rebuild
-        - path: ./backend/uv.lock
-          target: "/home/appuser/app/uv.lock"
-          action: rebuild
-        - path: ./backend/Dockerfile
-          action: rebuild
-        - path: ./backend/.dockerignore
-          action: rebuild
+      - "5001:5000"
+    volumes:
+      - ./backend:/home/appuser/app
+    command: gunicorn "src.allergy_snatcher.__main__:app" -b 0.0.0.0:5000 --reload
+    depends_on:
+      db:
+        condition: service_healthy
         
   db:
     image: mysql:8.0
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: mydatabase
       MYSQL_USER: myuser
       MYSQL_PASSWORD: mypassword
+      SECRET_KEY: 1234567890
+      ADMIN_REGISTRATION_KEY: password
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+      
 
 volumes:
   db_data:

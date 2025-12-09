@@ -1,0 +1,30 @@
+name: H-E-B Seasoned Beef Skirt Steak Fajitas
+brand: H-E-B
+ingredients:
+  - Beef Skirt Steak
+  - Water
+  - Seasoning (Spices, Salt, Garlic Powder, Onion Powder)
+  - Lime Juice
+nutrition:
+  fats:
+    total: 14
+    saturated: 6
+    trans: 0
+  cholesterol: 70
+  sodium: 680
+  carbohydrates: 2
+  dietary_fiber: 0
+  total_sugars: 1
+  added_sugars: 0
+  protein: 22
+servings:
+  size: 4
+  calories: 210
+  unit: oz
+category: meat
+cuisine: tex-mex
+dietary_restrictions:
+  - Gluten
+  - Nuts
+  - Dairy
+  - Red meat

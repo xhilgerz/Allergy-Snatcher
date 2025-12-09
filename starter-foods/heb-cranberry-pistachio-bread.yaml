@@ -1,0 +1,32 @@
+name: H-E-B Bakery Scratch Cranberry Pistachio Bread
+brand: H-E-B Bakery
+ingredients:
+  - Enriched Wheat Flour
+  - Water
+  - Dried Cranberries
+  - Pistachios
+  - Sugar
+  - Yeast
+  - Salt
+  - Soybean Oil
+nutrition:
+  fats:
+    total: 3.5
+    saturated: 0.5
+    trans: 0
+  cholesterol: 0
+  sodium: 300
+  carbohydrates: 35
+  dietary_fiber: 2
+  total_sugars: 8
+  added_sugars: 5
+  protein: 6
+servings:
+  size: 2
+  unit: oz
+  calories: 180
+category: bread
+cuisine: american
+dietary_restrictions:
+  - Nuts
+  - Dairy

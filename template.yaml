@@ -1,0 +1,25 @@
+#source: i
+
+name: name
+brand: templet 
+ingredients:
+  - food
+
+nutrition: #this must be in grams
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 0
+  carbohydrates: 0
+  dietary_fiber: 0
+  total_sugars: 0
+  added_sugars: 0
+  protein: 0
+servings:
+  size: 0
+  unit: item
+category: ingredient
+cuisine: null # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)
+dietary_restrictions: []

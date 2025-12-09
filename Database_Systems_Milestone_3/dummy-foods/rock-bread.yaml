@@ -1,0 +1,26 @@
+name: Dwarven Rock-Bread
+brand: Ironforge Bakery
+ingredients:
+  - Stoneground Wheat
+  - Basalt Flour
+  - Salt
+  - Yeast
+nutrition:
+  fats:
+    total: 2
+    saturated: 0.5
+    trans: 0
+  cholesterol: 0
+  sodium: 300
+  carbohydrates: 50
+  dietary_fiber: 15
+  total_sugars: 1
+  added_sugars: 0
+  protein: 10
+servings:
+  size: 1
+  unit: item
+category: Bread
+cuisine: Dwarven
+dietary_restrictions:
+  - High-Fiber

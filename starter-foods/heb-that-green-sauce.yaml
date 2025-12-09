@@ -1,0 +1,33 @@
+name: H-E-B That Green Sauce
+brand: H-E-B
+ingredients:
+  - Tomatillos
+  - Jalapenos
+  - Onions
+  - Cilantro
+  - Garlic
+  - Lime Juice
+  - Salt
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 200
+  carbohydrates: 2
+  dietary_fiber: 1
+  total_sugars: 1
+  added_sugars: 0
+  protein: 0
+servings:
+  size: 2
+  unit: tbsp
+  calories: 40
+category: condiments
+cuisine: tex-mex
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy

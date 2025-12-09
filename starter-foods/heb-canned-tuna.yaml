@@ -1,0 +1,28 @@
+name: H-E-B Canned Tuna in Water
+brand: H-E-B
+ingredients:
+  - Tuna
+  - Water
+  - Salt
+nutrition:
+  fats:
+    total: 1
+    saturated: 0
+    trans: 0
+  cholesterol: 40
+  sodium: 250
+  carbohydrates: 0
+  dietary_fiber: 0
+  total_sugars: 0
+  added_sugars: 0
+  protein: 20
+servings:
+  size: 2
+  unit: oz
+  calories: 50
+category: canned goods
+cuisine: american
+dietary_restrictions:
+  - Gluten
+  - Nuts
+  - Dairy

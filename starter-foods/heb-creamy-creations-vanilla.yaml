@@ -1,0 +1,34 @@
+name: H-E-B Creamy Creations 1905 Vanilla Ice Cream
+brand: H-E-B
+ingredients:
+  - Milk
+  - Cream
+  - Sugar
+  - Skim Milk
+  - Corn Syrup
+  - Egg Yolks
+  - Natural Vanilla Flavor
+  - Guar Gum
+  - Tara Gum
+  - Carrageenan
+nutrition:
+  fats:
+    total: 10
+    saturated: 6
+    trans: 0
+  cholesterol: 50
+  sodium: 55
+  carbohydrates: 19
+  dietary_fiber: 0
+  total_sugars: 18
+  added_sugars: 13
+  protein: 3
+servings:
+  size: 0.67
+  unit: cup
+  calories: 230
+category: frozen dessert
+cuisine: american
+dietary_restrictions:
+  - Eggs
+  - Lactose

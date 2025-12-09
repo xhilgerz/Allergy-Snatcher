@@ -1,0 +1,26 @@
+#source: i
+
+name: BFree Foods, Gluten Free, Homestyle Sandwich White Sourdough Loaf, 14.1oz, 1 loaf
+brand: BFree 
+ingredients:
+  - food
+
+nutrition: #this must be in grams
+  fats: 
+    total: 2.5
+    saturated: 0.5
+    trans: 0
+  cholesterol: 0
+  sodium: 0.22
+  carbohydrates: 30
+  dietary_fiber: 4
+  total_sugars: 2
+  added_sugars: 1
+  protein: 2
+servings:
+  size: 2
+  calories: 150
+  unit: item
+category: ingredient
+cuisine: null # Can be nullable, but think of style of food (Italian, Tex-Mex, etc)
+dietary_restrictions: ["Gluten", "Dairy", "Vegan"] 

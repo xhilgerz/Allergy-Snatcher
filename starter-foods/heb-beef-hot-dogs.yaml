@@ -1,0 +1,32 @@
+name: H-E-B Uncured Beef Hot Dogs
+brand: H-E-B
+ingredients:
+  - Beef
+  - Water
+  - Salt
+  - Spices
+  - Paprika
+  - Garlic Powder
+  - Celery Powder
+nutrition:
+  fats:
+    total: 13
+    saturated: 5
+    trans: 0.5
+  cholesterol: 30
+  sodium: 480
+  carbohydrates: 1
+  dietary_fiber: 0
+  total_sugars: 1
+  added_sugars: 0
+  protein: 6
+servings:
+  size: 1
+  unit: item
+  calories: 130
+category: meat
+cuisine: american
+dietary_restrictions:
+  - Gluten
+  - Nuts
+  - Dairy

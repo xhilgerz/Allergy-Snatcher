@@ -1,0 +1,31 @@
+name: H-E-B Bakery White Bread
+brand: H-E-B Bakery
+ingredients:
+  - Enriched Wheat Flour
+  - Water
+  - Sugar
+  - Soybean Oil
+  - Yeast
+  - Salt
+nutrition:
+  fats:
+    total: 1.5
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 200
+  carbohydrates: 15
+  dietary_fiber: 0
+  total_sugars: 2
+  added_sugars: 2
+  protein: 3
+servings:
+  size: 1
+  unit: item
+  calories: 80
+category: bread
+cuisine: american
+dietary_restrictions:
+  - Gluten
+  - Nuts
+  - Dairy

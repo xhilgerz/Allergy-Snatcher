@@ -1,0 +1,27 @@
+name: H-E-B Texas Roots Red Onions
+brand: H-E-B Texas Roots
+ingredients:
+  - Red Onion
+nutrition:
+  fats:
+    total: 0
+    saturated: 0
+    trans: 0
+  cholesterol: 0
+  sodium: 0
+  carbohydrates: 14
+  dietary_fiber: 2
+  total_sugars: 9
+  added_sugars: 0
+  protein: 2
+servings:
+  size: 1
+  unit: item
+  calories: 60
+category: produce
+cuisine: null
+dietary_restrictions:
+  - Vegan
+  - Gluten
+  - Nuts
+  - Dairy
