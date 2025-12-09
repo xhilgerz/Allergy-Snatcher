@@ -25,7 +25,7 @@ export default function About() {
       </p>
 
       <ul>
-        <li><strong>Seth Chicks</strong></li>
+        <li><strong>Seth Chick</strong></li>
         <li><strong>Alekzander Brysch</strong></li>
         <li><strong>Carlos Meija Rosales</strong></li>
       </ul>
