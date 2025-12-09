@@ -123,7 +123,7 @@ CREATE TABLE diet_restrict_assoc (
 );
 
 CREATE VIEW food_summary AS
-SELECT f.name AS "Food Name", brand, c.category, cu.cuisine, GROUP_CONCAT(i.ingredient_name) FROM foods f
+SELECT f.name AS "Food Name", brand, c.category, cu.cuisine, GROUP_CONCAT(i.ingredient_name) AS "Ingredient List" FROM foods f
 JOIN ingredients i ON i.food_id = f.id
 JOIN categories c ON c.id = f.category_id
 LEFT JOIN cuisines cu ON cu.id = f.cuisine_id
