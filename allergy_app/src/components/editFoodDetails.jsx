@@ -8,6 +8,7 @@ export default function EditFoodDetails() {
   const navigate = useNavigate();
   const [initialValues, setInitialValues] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     let isMounted = true;
@@ -37,16 +38,37 @@ export default function EditFoodDetails() {
   }, [foodId]);
 
   const handleSubmit = async (payload) => {
-    await updateFood(foodId, payload);
-    alert("Food updated successfully!");
-    navigate("/edit-food");
+    setErrors({}); // Clear previous errors
+    try {
+      await updateFood(foodId, payload);
+      alert("Food updated successfully!");
+      navigate("/edit-food");
+    } catch (error) {
+      if (error.response && (error.response.status === 422 || error.response.status === 411)) {
+        const errorDetails = error.response.data.details;
+        const newErrors = {};
+        errorDetails.forEach(detail => {
+          const fieldName = detail.loc[0];
+          if (fieldName === 'sat_fats') {
+            newErrors['saturated_fats'] = detail.msg;
+          } else if (fieldName === 'cal') {
+            newErrors['calories'] = detail.msg;
+          } else {
+            newErrors[fieldName] = detail.msg;
+          }
+        });
+        setErrors(newErrors);
+      } else {
+        console.error("Failed to update food:", error);
+      }
+    }
   };
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this food item?")) {
       return;
     }
-    await deleteFood(foodId,true);
+    await deleteFood(foodId, true);
     alert("Food deleted successfully!");
     navigate("/edit-food");
   };
@@ -67,6 +89,7 @@ export default function EditFoodDetails() {
       showDelete
       onDelete={handleDelete}
       isEditing
+      errors={errors}
     />
   );
 }

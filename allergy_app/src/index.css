@@ -497,3 +497,17 @@ button {
     opacity: 1;
   }
 }
+
+.error-message {
+  color: #d9534f; /* A standard red for errors */
+  font-size: 0.8em;
+  margin-top: 4px;
+  display: block;
+}
+
+/* You might also want to adjust the margin on your form labels */
+.food-form label {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+}

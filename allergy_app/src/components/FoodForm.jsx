@@ -32,6 +32,7 @@ export default function FoodForm({
   onDelete,
   showDelete = false,
   isEditing = false,
+  errors = {},
 }) {
   const [formData, setFormData] = useState(defaultValues);
   const [restrictionOptions, setRestrictionOptions] = useState([]);
@@ -189,16 +190,38 @@ export default function FoodForm({
     }
   };
 
+  const ErrorMessage = ({ field }) => {
+    // The form uses 'saturated_fats' and 'calories' but the backend might send 'sat_fats' or 'cal'
+    const fieldName =
+      field === "saturated_fats"
+        ? "saturated_fats"
+        : field === "calories"
+        ? "calories"
+        : field;
+    const backendFieldName =
+      field === "saturated_fats"
+        ? "sat_fats"
+        : field === "calories"
+        ? "cal"
+        : field;
+    
+    const message = errors[fieldName] || errors[backendFieldName];
+    return message ? <span className="error-message">{message}</span> : null;
+  };
+
+
   return (
     <form className="food-form" onSubmit={handleSubmit}>
       <label>
         Name:
         <input name="name" value={formData.name} onChange={handleChange} />
+        <ErrorMessage field="name" />
       </label>
 
       <label>
         Brand:
         <input name="brand" value={formData.brand} onChange={handleChange} />
+        <ErrorMessage field="brand" />
       </label>
 
       <label>
@@ -208,20 +231,21 @@ export default function FoodForm({
           value={formData.ingredients}
           onChange={handleChange}
         />
+        <ErrorMessage field="ingredients" />
       </label>
 
       {[
         ["total_fats", "Total Fats (g)"],
-      ["saturated_fats", "Saturated Fats (g)"],
-      ["trans_fats", "Trans Fats (g)"],
-      ["cholesterol", "Cholesterol (mg)"],
-      ["sodium", "Sodium (mg)"],
-      ["carbs", "Total Carbohydrates (g)"],
-      ["dietary_fiber", "Dietary Fiber (g)"],
-      ["total_sugars", "Total Sugars (g)"],
-      ["added_sugars", "Added Sugars (g)"],
-      ["calories", "Calories"],
-      ["protein", "Protein (g)"],
+        ["saturated_fats", "Saturated Fats (g)"],
+        ["trans_fats", "Trans Fats (g)"],
+        ["cholesterol", "Cholesterol (mg)"],
+        ["sodium", "Sodium (mg)"],
+        ["carbs", "Total Carbohydrates (g)"],
+        ["dietary_fiber", "Dietary Fiber (g)"],
+        ["total_sugars", "Total Sugars (g)"],
+        ["added_sugars", "Added Sugars (g)"],
+        ["calories", "Calories"],
+        ["protein", "Protein (g)"],
       ].map(([name, label]) => (
         <label key={name}>
           {label}
@@ -232,6 +256,7 @@ export default function FoodForm({
             onChange={handleChange}
             step="any"
           />
+          <ErrorMessage field={name} />
         </label>
       ))}
 
@@ -247,6 +272,7 @@ export default function FoodForm({
           onChange={handleCuisineChange}
           placeholder="Select a cuisine..."
         />
+        <ErrorMessage field="cuisine_id" />
       </label>
 
       <label>
@@ -263,6 +289,7 @@ export default function FoodForm({
           }
           placeholder="Select a category..."
         />
+        <ErrorMessage field="category_id" />
       </label>
 
       <label>
@@ -275,6 +302,7 @@ export default function FoodForm({
           min="0"
           step="any"
         />
+        <ErrorMessage field="serving_amt" />
       </label>
       <label>
         Serving Unit:
@@ -293,6 +321,7 @@ export default function FoodForm({
           <option value="cup">cup</option>
           <option value="item">item</option>
         </select>
+        <ErrorMessage field="serving_unit" />
       </label>
 
       <label>
@@ -307,6 +336,7 @@ export default function FoodForm({
           onChange={handleRestrictionsChange}
           placeholder="Select dietary restrictions..."
         />
+        <ErrorMessage field="dietary_restriction_ids" />
       </label>
 
       {isEditing && (

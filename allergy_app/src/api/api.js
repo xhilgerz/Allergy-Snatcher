@@ -7,8 +7,9 @@ const url = (path) => `${API_BASE}${path}`;
 async function handleResponse(response, defaultMsg = "Request failed") {
   const text = await response.text();
   let message = defaultMsg;
+  let parsed = null;
   try {
-    const parsed = text ? JSON.parse(text) : {};
+    parsed = text ? JSON.parse(text) : {};
     if (response.ok) return parsed;
 
     let detailText = "";
@@ -30,6 +31,9 @@ async function handleResponse(response, defaultMsg = "Request failed") {
     message = `${defaultMsg} (status ${response.status}${response.statusText ? `: ${response.statusText}` : ""})`;
   }
   const err = new Error(message);
+  if (parsed) {
+    err.response = { data: parsed, status: response.status };
+  }
   err._emitted = true; // mark so we don't emit twice downstream
   emitError(message);
   throw err;
