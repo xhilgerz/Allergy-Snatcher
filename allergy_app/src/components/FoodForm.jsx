@@ -230,6 +230,7 @@ export default function FoodForm({
             name={name}
             value={formData[name]}
             onChange={handleChange}
+            step="any"
           />
         </label>
       ))}
@@ -272,6 +273,7 @@ export default function FoodForm({
           value={formData.serving_amt}
           onChange={handleChange}
           min="0"
+          step="any"
         />
       </label>
       <label>
