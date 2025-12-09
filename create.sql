@@ -121,3 +121,10 @@ CREATE TABLE diet_restrict_assoc (
     FOREIGN KEY(food_id) REFERENCES foods (id),
     FOREIGN KEY(restriction_id) REFERENCES dietary_restrictions (id)
 );
+
+CREATE VIEW food_summary AS
+SELECT f.name AS "Food Name", brand, c.category, cu.cuisine, GROUP_CONCAT(i.ingredient_name) FROM foods f
+JOIN ingredients i ON i.food_id = f.id
+JOIN categories c ON c.id = f.category_id
+LEFT JOIN cuisines cu ON cu.id = f.cuisine_id
+GROUP BY f.id, f.name, brand, c.category, cu.cuisine;
